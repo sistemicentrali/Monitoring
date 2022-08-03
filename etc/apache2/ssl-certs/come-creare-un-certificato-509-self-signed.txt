@@ -1,0 +1,13 @@
+### Comando openssl per creare un certificato self-signed per apache
+openssl req -new -x509 -days 3650 -nodes -out /etc/apache2/ssl-certs/nagios.pem -keyout /etc/apache2/ssl-certs/nagios.pem
+
+
+### Dati da inserire nel certificato
+E = nagiosadmin@dapced.rm
+CN = nagios.dapced.rm
+OU = CED
+O = DAP
+L = Rome
+ST = ITALY
+C = IT
+

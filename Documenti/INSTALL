@@ -1,0 +1,71 @@
+#ISTALLAZIONE NAGIOS server
+* istallare i pacchetti :
+	# apt-get install nagios3 nagios-nrpe-plugin 
+	
+#CONFIGURAZIONE NAGIOS server
+
+* 1 file template x host generici: 0TH-hosts_generici.cfg
+* 1 file template x servizi generici: 0TS-servizi_generici.cfg
+
+* 1 file x definizioni di contatti: 1C-contatti.cfg
+* 1 file x definizioni di gruppi di contatti: 1CG-gruppi_contatti.cfg
+* 1 file x definizioni di periodi di tempo: 1P-periodi_tempo.cfg
+* 1 file x definizioni di informazioni estese: 1E-informazioni_estese.cfg
+
+* le definizioni dei comandi vanno inserite nei file di configurazione per i plugins (/etc/nagios-plugins/config)
+
+* 1 file x definizioni di gruppi di hosts: 2HG-gruppi_di_hosts.cfg
+* 1 file x definizioni di gruppi di servizi: 2SG-gruppi_di_servizi.cfg
+* 1 file x definizioni di servizi comuni (comprendente gli host o gruppi comuni da monitorare): 3S-servizi_comuni.cfg
+
+* 1 file x ogni host (comprendente i servizi locali/specifici da monitorare): H-<NOME_HOST>.cfg
+
+NOTA: <NOME_HOST> deve essere l'hostname dell'host, se non ha l'hostname può essere l'IP. Preferibilmente il nome dovrebbe avere un prefisso che indichi
+
+################################################################################
+#PRE-CONFIGURAZIONE per CHECK tramite SSH
+* Sul Server NAGIOS: creazione della chiave pubblica dell'utente nagios per gli host da monitorare tramite ssh
+	# su - -s /bin/bash nagios
+	$ ssh-keygen -t dsa
+		<non inserire alcuna passphrase>
+* copiare la chiave /var/run/nagios3/.ssh/id_dsa.pub nella home dell'utente nagios dell'host da monitorare
+	$ ssh-copy-id -i ~/.ssh/id_dsa.pub <indirizzo-IP-host>
+
+################################################################################
+#RHEL 5.x host da monitorare
+
+* Istallazione PLUGINS: tramite compilazione:
+	- assicurarsi di avere istallato i seguenti pacchetti: <PACCHETTI PER LO SVILUPPO>
+	- eseguire i comandi:
+	# groupadd -g 5000 nagios
+	# useradd -u 5000 -g nagios -d /opt/nagios nagios
+	- copiare nagios-plugins-1.4.12.tar.gz su una directory di istallazione, entrare in questa directory ed eseguire come utente nagios
+	# su - nagios
+	$ tar xvfz nagios-plugins-1.4.12.tar.gz
+	$ cd nagios-plugins-1.4.12
+	$ ./configure --prefix=/opt/nagios --libexecdir=/opt/nagios/plugins
+	$ make
+	$ make install
+
+################################################################################
+#NRPE
+
+* Istallazione/configurazione sull'host da monitorare:
+	# tar xvzf nrpe-2.12.tar.gz
+	# cd nrpe-2.12
+	# ./configure  --prefix=/opt/nagios \
+	 			--libexecdir=/opt/nagios/plugins \
+				--with-nrpe-user=nagios \
+				--with-nrpe-group=nagios \
+				--with-nagios-user=nagios \
+				--with-nagios-group=nagios \
+				--enable-command-args \
+				--enable-ssl
+	# make
+	# make install-daemon
+	# make install-daemon-config
+	- copiare il file di configurazione del demone nrpe, che è nel repository svn, (/opt/nagios/etc/nrpe.cfg)
+	- copiare lo script nrpe-daemon*, che è nel repository svn, adeguato alla piattaforma in /etc/init.d, rinominandolo nrpe-daemon
+	- rendere il servizio nrpe-daemon avviabile al boot
+
+

@@ -1,0 +1,18 @@
+# A simple configuration file for monitoring the local host
+# This can serve as an example for configuring other servers;
+# Custom services specific to this host are added here, but services
+# defined in nagios2-common_services.cfg may also apply.
+# 
+
+define host{
+        use                     generic-host            ; Name of host template to use
+        host_name               luciserver
+        alias                   server-test
+        address                 10.0.255.64
+        }
+
+# Define a service to check the disk space of the root partition
+# on the local machine.  Warning if < 20% free, critical if
+# < 10% free space on partition.
+
+

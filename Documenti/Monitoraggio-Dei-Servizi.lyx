@@ -1,0 +1,5383 @@
+#LyX 1.5.5 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+% added by lyx2lyx for converted index entries
+\@ifundefined{textmu}
+ {\usepackage{textcomp}}{}
+% added by lyx2lyx for converted entries
+\@ifundefined{textmu}
+ {\usepackage{textcomp}}{}
+\end_preamble
+\language italian
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize a4paper
+\use_geometry false
+\use_amsmath 1
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\series bold
+\color blue
+Monitoraggio dei Servizi
+\end_layout
+
+\begin_layout Author
+
+\series bold
+\size normal
+\noun on
+\color blue
+Unità 2.1
+\newline
+
+\newline
+Ing.
+ MARCO PAONE
+\noun default
+ (Coordinatore)
+\noun on
+ 
+\newline
+Ing.
+ GIUSEPPE MASI
+\newline
+Sig.
+ DANILO PIACEVOLI
+\end_layout
+
+\begin_layout Chapter
+Introduzione
+\end_layout
+
+\begin_layout Standard
+Dai numerosi sondaggi e ricerche che compaiono su internet si desume che
+ si sta andando sempre più verso l'integrazione di servizi e sistemi ogni
+ giorno più complessi.
+ Anche le piccole aziende si stanno dotando di server aziendali dove vengono
+ installate applicazioni e servizi per i clienti e i propri dipendenti.
+ 
+\end_layout
+
+\begin_layout Standard
+Spesso però si pensa solo all'implementazione e non al controllo degli stessi
+ server che fanno il core bussiness dell'azienda.
+ Le capacità tecniche per fare le integrazioni ci sono ma quello che manca
+ a mio avviso è la cultura dirigenziale per poter proporre o pensare di
+ implementare oltre ai servizi anche un buon monitoraggio degli stessi.
+ 
+\end_layout
+
+\begin_layout Standard
+Un altro problema che riscontro è la paura da parte dei commerciali delle
+ diverse aziende d'informatica, con cui sono venuto a contatto, di proporre
+ o vendere soluzioni basate su prodotti OpenSource perchè non c'è dietro
+ una società o struttura tecnica di supporto al prodotto.
+ Le aziende si rivolgono alle società che vendono software senza pensare
+ che non esistono solo dei software a pagamento che si occupano di fare
+ monitoraggio dei servizi, ma ne esistono di ottimi anche Open-Source.
+ 
+\end_layout
+
+\begin_layout Standard
+In questo progetto implementeremo un sistema di monitoraggio attivo/passivo
+ utilizzando Nagios ( 
+\begin_inset LatexCommand url
+target "http://www.nagios.org"
+
+\end_inset
+
+), un programma OpenSource per monitorare servizi e server in una realtà
+ distribuita.
+ 
+\end_layout
+
+\begin_layout Section
+Cos'è Nagios
+\end_layout
+
+\begin_layout Standard
+Secondo Wikipedia (http://en.wikipedia.org/wiki/System_Monitoring) Nagios
+ è uno strumento per il monitoraggio di un sistema.
+ Ciò significa che controlla costantemente lo stato di macchine e servizi
+ vari su quelle macchine.
+ Lo scopo principale del monitoraggio di sistema è quello di individuare
+ e segnalare un qualsiasi sistema che non funziona correttamente, non appena
+ possibile, in modo che, siate a conoscenza del problema prima che l'utente
+ si imbatta in esso.
+ 
+\end_layout
+
+\begin_layout Standard
+Nagios non esegue alcun servizio o controlli per proprio conto.
+ Esso utilizza plugin per effettuare i controlli.
+ Questo lo rende una soluzione molto modulare e flessibile per l'esecuzione
+ e il controllo della macchina e dei servizi.
+ Gli oggetti controllati da Nagios sono divisi in due categorie: gli host
+ e servizi.
+ Gli Host sono macchine fisiche (server, router, workstation, stampanti
+ e così via), mentre i servizi sono funzionalità particolari; per esempio,
+ un server web (un processo httpd su una macchina) può essere definito come
+ un servizio che deve essere monitorato.
+ Ogni servizio è associato con un host su cui è in esecuzione.
+ Inoltre, entrambe, macchine e servizi, possono essere raggruppati in gruppi
+ di host e di servizi, rispettivamente.
+ Ci occuperemo nel dettaglio di ciascuno di questi tipi di oggetti nella
+ sezione successiva.
+ Nagios ha due principali punti di forza quando si tratta di scansione:
+ prima di tutto, invece di valori di monitoraggio, utilizza solo quattro
+ stati per descrivere lo status: 
+\series bold
+OK
+\series default
+, 
+\series bold
+WARNING
+\series default
+, 
+\series bold
+CRITICAL
+\series default
+, e 
+\series bold
+UNKNOWN
+\series default
+.
+ L'approccio di fornire solo questi stati astratti consente agli amministratori
+ di sistema di ignorare i valori di monitoraggio e di decidere solo quali
+ siano i limiti di allerta / critici (warning/critical).
+ Avere un limite stretto da tenere d'occhio è molto meglio che rilevare
+ un problema indipendentemente dal fatto che si trasformi da un limite di
+ allerta a uno critico in 15 minuti o in una settimana.
+ Questo è esattamente ciò che fa Nagios.
+ Se state controllando un valore numerico come ad esempio la quantità di
+ spazio su disco e l'utilizzo della CPU, è possibile definire soglie per
+ le quali i valori sono considerati corretti, un allert o un guasto.
+ Ad esempio, gli amministratori di sistema tendono ad ignorare le cose quali
+ una lenta diminuizione dello spazio disco.
+ Le persone spesso ignorano questo fino a quando un processo critico esaurisce
+ lo spazio su disco.
+ Un altro vantaggio è che un report mostra il numero di servizi attivi e
+ funzionanti in uno dei due stati sia 'warning' che 'critical'.
+ Tale report offre una buona panoramica dello stato dell'infrastruttura.
+ Nagios offre anche report simili per i gruppi di hosts e i gruppi di servizi,
+ ad esempio quando un servizio critico o database server è inattivo.
+ Tale report può anche aiutare a stabilire una priorità su ciò che deve
+ essere affrontato prima, e i problemi che possono essere gestiti dopo.
+ Nagios effettua tutti i controlli utilizzando i plugin.
+ Questi sono componenti esterni ai quali Nagios passa le informazioni su
+ ciò che dovrebbe essere controllato e su quali sono i limiti di 'warning'
+ e quelli 'critical'.
+ I plugin sono responsabili dei controlli e delle analisi dei risultati.
+ L'output di tali controlli è uno stato (OK, WARNING, CRITICAL, e UNKNOWN)
+ e del testo aggiuntivo che fornisce informazioni sul servizio in dettaglio.
+ Questo testo è rivolto principalmente agli amministratori di sistema per
+ essere in grado di leggere uno stato dettagliato di un servizio.
+ Nagios non solo offre un sistema centrale di monitoraggio, ma offre anche
+ una serie di plug-in standard in un pacchetto separato (vedi http://nagiosplugi
+ns.org/ per maggiori dettagli).
+ Questi plug-in permettono i controlli di quasi tutti i servizi che la vostra
+ azienda possa avere.
+ (Fare riferimento al capitolo 4, Panoramica di Nagios Plugin, per informazioni
+ dettagliate sui plugin che sono stati sviluppati insieme a Nagios).
+ Se avete bisogno di eseguire un controllo specifico (per esempio, per connetter
+si a un servizio Web e invocare i metodi), è molto facile scrivere un plugin
+ personalizzato.
+ E non è tutto: possono essere scritti in qualsiasi linguaggio di programmazione
+, e richiedono meno di un quarto del tempo necessario per scrivere un comando
+ completo di controllo! 
+\end_layout
+
+\begin_layout Subsection
+Vantaggi del monitoraggio delle risorse
+\end_layout
+
+\begin_layout Standard
+Ci sono molte ragioni per cui è necessario assicurarsi che tutte le risorse
+ lavorino come previsto.
+ Se non siete ancora convinti, dopo aver letto l'introduzione a questo capitolo,
+ qui ci sono alcuni punti principali per cui è importante monitorare la
+ vostra infrastruttura.
+ 
+\end_layout
+
+\begin_layout Standard
+Il vantaggio principale è il miglioramento della qualità.
+ Se il vostro personale IT può rilevare errori più rapidamente, saranno
+ anche in grado di rispondere a questi molto più velocemente.
+ A volte, ci vogliono ore o giorni per avere il primo rapporto su un guasto,
+ anche se molti utenti possono imbattersi in errori.
+ Nagios farà in modo che se qualcosa non funziona, tu lo sai subito.
+ E 'anche possibile che Nagios esegua azioni di recupero automatico.
+ Questo viene fatto usando i gestori di eventi.
+ Questi sono comandi che vengono eseguiti dopo che lo stato di un host o
+ di un servizio è cambiato - in questo modo, quando un router primario è
+ inattivo, Nagios passerà ad una soluzione di backup fino a quando non è
+ risolto il problema.
+ Un caso tipico potrebbe essere quello di avviare una connessione dial-up
+ come ripiego, nel caso di una VPN inattiva.
+ 
+\end_layout
+
+\begin_layout Standard
+Un altro vantaggio è la migliore determinazione di un problema.
+ Molto spesso, ciò che gli utenti indicano come un guasto è ben lungi dall'esser
+e la causa principale del problema - un sistema di posta elettronica, a
+ causa di un servizio LDAP non funziona correttamente.
+ Se si definiscono correttamente le dipendenze tra gli host, Nagios farà
+ notare che il server POP3 e-mail viene considerato non funzionante perché
+ il servizio LDAP, che vi dipende, ha un problema.
+ Nagios avvia il controllo del server e-mail non appena il problema con
+ LDAP è stato risolto.
+ Nagios è anche molto flessibile quando si tratta di notificare alle persone
+ ciò che non sta funzionando correttamente.
+ È possibile impostarlo fino a inviare e-mail a persone diverse a seconda
+ di cosa non sta funzionando correttamente.
+ Nella maggior parte dei casi, la vostra azienda ha un grande team IT o
+ più squadre.
+ Di solito si indicano alcune persone a gestire i server, e gli altri a
+ gestire switch di rete / router / modem.
+ È anche possibile usare l'interfaccia web di Nagios per la gestione di
+ chi sta lavorando su quel problema.
+ È inoltre possibile configurare come Nagios invia notifiche via e-mail,
+ cercapersone su Jabber, MSN, oppure usare dei propri script.
+ 
+\end_layout
+
+\begin_layout Standard
+Il monitoraggio delle risorse non solo è utile per individuare i problemi,
+ ma si può anche aiutarti a prevenirli.
+ Nagios gestisce le situazioni di 'warning' e 'critical' in modo diverso.
+ Ciò significa che è possibile riconoscere le situazioni potenzialmente
+ problematiche in fretta.
+ Ad esempio, se il vostro spazio su disco su un server di posta elettronica
+ si sta esaurendo, è meglio essere a conoscenza di questa situazione prima
+ che diventi un punto critico.
+ 
+\end_layout
+
+\begin_layout Standard
+Il controllo può anche essere impostato su più macchine in varie sedi, che
+ possono comunicare tutti i loro risultati a un server Nagios centrale.
+ In questo modo, le informazioni su tutti gli host e i servizi nel sistema
+ possono essere acceduti da una singola macchina.
+ Questo dà un quadro più completo della vostra infrastruttura IT, e consente
+ anche test di elementi più complessi come ad esempio i firewall.
+ 
+\end_layout
+
+\begin_layout Subsection
+Caratteristiche principali
+\end_layout
+
+\begin_layout Standard
+Il principale punto di forza Nagios è la sua flessibilità: può essere configurat
+o per monitorare l'infrastruttura IT nel modo desiderato.
+ Esso ha anche un meccanismo automatico di far fronte ai problemi, e un
+ potente sistema di notifica.
+ Tutto questo si basa su un sistema chiaro di definizione dell'oggetto e
+ su alcuni tipi di oggetti: 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Comandi
+\series default
+ sono le definizioni di come Nagios dovrebbe eseguire particolari tipi di
+ verifica, che sono un livello di astrazione superiore dei plugin effettivi
+ che consentono di raggruppare tipi di operazioni simili.
+ 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Periodi
+\series default
+ 
+\series bold
+di
+\series default
+ 
+\series bold
+tempo
+\series default
+ sono la data e l'ora all'interno dei quali l'operazione dovrebbe o non
+ dovrebbe essere eseguita, ad esempio: da Lunedi a Venerdì dalle ore 09:00
+ alle 17:00.
+ 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Contatti
+\series default
+ e 
+\series bold
+gruppi
+\series default
+ 
+\series bold
+di
+\series default
+ 
+\series bold
+contatto
+\series default
+ sono persone a cui devono essere notificati, insieme a informazioni su
+ come e quando devono essere contattati.
+ I contatti possono essere raggruppati e un contatto unico può essere membro
+ di più di un gruppo.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gli 
+\series bold
+Host
+\series default
+ sono macchine fisiche, nonché le informazioni su chi deve essere contattato,
+ come i controlli devono essere eseguiti, e quando.
+ Gli host possono essere raggruppati, in gruppi di host di cui ogni host
+ può essere un membro di più di un gruppo di host.
+ 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Servizi
+\series default
+ sono diverse funzionalità o le risorse per monitorare un host specifico,
+ insieme con le informazioni su chi deve essere contattato, come i controlli
+ devono essere effettuati, e quando.
+ I servizi possono essere raggruppati in gruppi di servizi, ogni servizio
+ può essere un membro di più di un gruppo di servizi.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gli 
+\series bold
+Host
+\series default
+ e 
+\series bold
+Service
+\series default
+ 
+\series bold
+escalations
+\series default
+ definiscono il periodo di tempo dopo il quale altre persone devono essere
+ avvertite di alcuni eventi - ad esempio un server importante inattivo per
+ più di 4 ore dovrebbe mettere in allerta i responsabili IT in modo da iniziare
+ a monitorare la questione.
+ Queste persone sono definite in aggiunta alle normali comunicazioni configurate
+ negli oggetti host e servizio.
+ 
+\end_layout
+
+\begin_layout Standard
+Un vantaggio importante che si otterrà utilizzando Nagios è un sistema 
+\begin_inset Quotes eld
+\end_inset
+
+robusto
+\begin_inset Quotes erd
+\end_inset
+
+ di dipendenze.
+ Per qualsiasi amministratore, è evidente che se il router è inattivo, l'accesso
+ a tutte le macchine tramite esso fallirà.
+ Alcuni sistemi non ne tengono conto e, in tal caso, si potrebbe ottenere
+ una lista di macchine e servizi non funzionanti.
+ Nagios consente di definire le dipendenze tra gli host per avere la topologia
+ di rete effettiva.
+ Per esempio, se uno switch che si connette a un router è inattivo, Nagios
+ non farà verifiche sul router o sulle macchine che sono a carico del router.
+ Questo è illustrato nel seguente esempio: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig1.png
+	width 50page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+È inoltre possibile definire un servizio particolare, che dipende da un
+ altro servizio, sia sullo stesso host o su un altro host.
+ Se uno dei servizi è giù, un check per un servizio che dipende da esso
+ non viene eseguito.
+ Ad esempio, perchè l'applicazione intranet aziendale funzioni correttamente,
+ devono essere in esecuzione sia un server Web di base che un server di
+ database.
+ Quindi, se un servizio di database non funziona correttamente, Nagios non
+ effettuerà controlli sulla vostra applicazione.
+ Il server di database potrebbe essere sullo stesso host o su un host diverso.
+ In tal caso, se la macchina è giù o non accessibile, le notifiche per tutti
+ i servizi dipendenti dal servizio di database non saranno inviati.
+ 
+\end_layout
+
+\begin_layout Standard
+Nagios offre un sistema coerente di definizioni delle macro.
+ Queste sono le variabili che possono essere messe in tutte le definizioni
+ degli oggetti, a seconda del contesto.
+ Esse possono essere messe dentro i comandi, e a seconda dell'host, del
+ servizio, e di molti altri parametri, vengono sostituiti, di conseguenza,
+ i valori.
+ Ad esempio, in una definizione di comando è possibile utilizzare l'indirizzo
+ IP della macchina che è in corso di verifica in tutte le prove a distanza.
+ Questo rende possibile inserire le informazioni, come lo status attuale
+ e precedente di un servizio, in una e-mail di notifica.
+ Nagios 3 offre anche varie estensioni per le definizioni di macro, il che
+ lo rende un meccanismo ancora più potente.
+ 
+\end_layout
+
+\begin_layout Standard
+Nagios offre anche meccanismi di programmazione dei tempi di fermo macchina
+ previsti.
+ È possibile pianificare che un particolare host o un servizio dovrebbe
+ essere indisponibile.
+ Ciò impedirà a Nagios di notificare alle persone per quanto riguarda i
+ problemi connessi a questi oggetti.
+ Nagios può anche notificare automaticamente le persone dei tempi di fermo
+ programmato.
+ Questo è principalmente usato quando deve essere effettuata la manutenzione
+ della infrastruttura IT, e il server e / o i servizi che forniscono non
+ sono disponibili per un lungo tempo.
+ Ciò permette la creazione di un processo integrato di pianificazione tempi
+ di fermo macchina che gestirà inoltre l'informazione degli utenti.
+ 
+\end_layout
+
+\begin_layout Subsection
+Stati “Hard” e “Soft”
+\end_layout
+
+\begin_layout Standard
+Nagios opera verificando se un host o un servizio stanno funzionando correttamen
+te e stanno mantenendo il loro stato.
+ Perché lo stato di un servizio è solo uno dei quattro valori possibili,
+ è fondamentale che esso rifletta esattamente quello che è lo stato attuale.
+ Al fine di evitare problemi di individuare errori casuali e temporanei,
+ Nagios utilizza stati soft e hard per descrivere quello che è l'attuale
+ stato di un host o servizio.
+ Immaginiamo che un amministratore sta riavviando un server web e questa
+ operazione rende il collegamento alle pagine web non disponibile per cinque
+ secondi.
+ Per quanto, di solito, il riavvio viene eseguito di notte per ridurre il
+ numero di utenti interessati, questo è un periodo di tempo accettabile.
+ Tuttavia, un problema può verificarsi quando Nagios tenta di connettersi
+ al server e si accorge che in realtà è inattivo.
+ Se si basasse solo su un singolo risultato, sarebbe Nagios ad attivare
+ un allarme che il web server è inattivo.
+ Sarebbe effettivamente installato e funzionante ancora in pochi secondi,
+ ma ci vorrebbero un paio di minuti perchè Nagios possa scoprirlo.
+ 
+\end_layout
+
+\begin_layout Standard
+Per gestire le situazioni in cui un servizio viene interrotto per un tempo
+ molto breve, o il test è riuscito temporaneamente, sono stati introdotti
+ gli Stati 'soft'.
+ Quando lo stato di un controllo è 'unknown, o è diverso da quello precedente,
+ Nagios ritesta l'host o il servizio più volte per assicurarsi che il cambiament
+o è persistente.
+ Il numero di controlli è specificato nella configurazione dell'host o del
+ servizio.
+ Nagios presuppone che il nuovo risultato è in uno stato 'soft'.
+ Dopo che test supplementari hanno verificato che il nuovo stato è permanente,
+ esso è considerato uno stato 'hard'.
+ 
+\end_layout
+
+\begin_layout Standard
+Ogni definizione di host e di servizio specifica il numero di tentativi
+ da eseguire prima di poter ipotizzare che il cambiamento è permanente.
+ Ciò consente una maggiore flessibilità per quanti fallimenti devono essere
+ trattati come un problema reale, invece di uno temporaneo.
+ Impostando il numero di controlli a uno farà si che tutte le modifiche
+ devono essere trattate come 'hard' all'istante.
+ Il seguente è un esempio dei cambiamenti di stato 'soft' e 'hard', supponendo
+ che il numero dei controlli da effettuare è impostato a tre: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig2.png
+	width 50page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Questa funzione consente di ignorare le interruzioni brevi di un servizio.
+ E 'anche molto utile per eseguire i controlli che periodicamente possono
+ fallire anche se tutto funziona correttamente.
+ Dispositivi di controllo su SNMP è anche un esempio in cui un unico controllo
+ potrebbe non riuscire, ma il controllo alla fine riuscirà durante il secondo
+ o terzo controllo.
+ 
+\end_layout
+
+\begin_layout Section
+Architettura del Sistema
+\end_layout
+
+\begin_layout Standard
+L'architettura del sistema prevede l'utilizzo di un server (
+\emph on
+monitor-server
+\emph default
+) con le seguenti caratteristiche:
+\end_layout
+
+\begin_layout Itemize
+Server 
+\end_layout
+
+\begin_layout Itemize
+sistema operativo Ubuntu
+\end_layout
+
+\begin_layout Chapter
+Istallazione del software sul server Nagios
+\end_layout
+
+\begin_layout Section
+Istallazione del sistema operativo 
+\end_layout
+
+\begin_layout Standard
+Il sistema operativo istallato è 
+\series bold
+Ubuntu Jaunty
+\end_layout
+
+\begin_layout Standard
+La procedura di istallazione è effettuata in modalità standard.
+\end_layout
+
+\begin_layout Standard
+Le opzioni e i parametri di configurazione sono riportati nella seguente
+ tabella.
+ 
+\end_layout
+
+\begin_layout Standard
+I parametri e le opzioni non specificati, prendono i valori predefiniti.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features>
+<column alignment="center" valignment="middle" leftline="true" rightline="true" width="0">
+<column alignment="center" valignment="middle" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Parametro/Opzione
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Valore
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Lingua
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Italiano
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Tastiera
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+come appropriato
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Disco Locale
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features>
+<column alignment="center" valignment="top" leftline="true" width="0">
+<column alignment="center" valignment="middle" leftline="true" width="0">
+<column alignment="center" valignment="middle" leftline="true" rightline="true" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+partizione
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+dimensione
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+mount
+\emph default
+ 
+\emph on
+point
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+37 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+8 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+swap
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+122 MB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/boot
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+358 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/opt
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Indirizzo IP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+10.0.255.148
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Hostname
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+monitor-server
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Gateway
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+10.0.255.254
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Primary DNS
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+10.0.255.148
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Root Password
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+admin01
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Istallazione di NAGIOS 
+\end_layout
+
+\begin_layout Standard
+L'istallazione del software di monitoraggio NAGIOS, è consistito nell'istallare
+ il pacchetto 
+\family typewriter
+nagios3
+\family default
+ (e le relative dipendenze), tramite il comando
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+# apt-get install nagios3 nagios-nrpe-plugin
+\end_layout
+
+\begin_layout Chapter
+Configurazione di NAGIOS
+\end_layout
+
+\begin_layout Standard
+Di seguito riportiamo le modifiche rispetto alla configurazione di istallazione
+ predefinita.
+\end_layout
+
+\begin_layout Standard
+Il file di configurazione principale è 
+\family typewriter
+/etc/nagios3/nagios.cfg
+\family default
+.
+ 
+\end_layout
+
+\begin_layout Section
+Files di configurazione degli oggetti e dei comandi
+\end_layout
+
+\begin_layout Standard
+La struttura della configurazione iniziale per la definizione degli oggetti
+ (sotto la directory 
+\family typewriter
+\color black
+/etc/nagios3/conf.d
+\family default
+\color inherit
+) viene riportata di seguito:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+01TS-servizi_DISCO.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TH-hosts_generici.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-00-servizi_generici.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_CARICO_SISTEMA.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_DISCHI.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_HTTP.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_MISC.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_PROCESSI.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_RETE_GENERICI.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_SHARE_DI_RETE.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-01-servizi_UTENTI.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+0TS-servizi_generici.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+1C-contatti.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+1E-informazioni_estese.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+1P-periodi_tempo.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+2HG-gruppi_di_hosts.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+2SG-gruppi_di_servizi.cfg
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+3S-servizi_comuni_a_gruppi.cfg
+\end_layout
+
+\begin_layout Standard
+Per ogni host è previsto un file di definizione, comprendente anche tutti
+ i servizi specifici ad esso relativi, il cui nome è 
+\family typewriter
+\color black
+H-<NOME_HOST>.cfg
+\family default
+\color inherit
+, dove 
+\family typewriter
+\color black
+<NOME_HOST>
+\family default
+\color inherit
+ indica l'hostname, oppure l'indirizzo IP qualora esso non sia disponibile.
+ Preferibilmente il nome dovrebbe avere un prefisso che indichi la funzione,
+ locazione, o altro criterio, dell'host a cui si riferisce.
+ I file suddetti verranno riportati in appendice.
+\end_layout
+
+\begin_layout Standard
+Le definizioni dei comandi (e loro varianti) andranno inserite nei file
+ di configurazione per i plugins (
+\color black
+che sono all'interno della directory
+\family typewriter
+ /etc/nagios-plugins/config
+\family default
+\color inherit
+), facendo attenzione ad utilizzare i file che meglio si avvicinano alla
+ tipologia di comando che si sta definendo, eventualmente creandoli ex novo
+ (ad ex.
+ un comando relativo al controllo dello spazio disco potrebbe essere inserito
+ nel file 
+\family typewriter
+\color black
+/etc/nagios-plugins/config/disk.cfg
+\family default
+\color inherit
+).
+\end_layout
+
+\begin_layout Section
+Configurazione dell'interfaccia web
+\end_layout
+
+\begin_layout Standard
+Il server http utilizzato per l'interfaccia web è Apache versione 2.
+\end_layout
+
+\begin_layout Standard
+L'interfaccia è stata impostata per rispondere tramite il protocollo 
+\family typewriter
+https
+\family default
+ con un certificato autofirmato e rispondente all'URL:
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+https://nagios.dapced.rm:3443/
+\begin_inset Foot
+status open
+
+\begin_layout Standard
+Al primo collegamento dovrà essere accettato il certificato permettendo
+ l'eccezione di sicurezza come proposto dal browser.
+ Inoltre il nome di dominio 
+\family typewriter
+nagios.dapced.rm
+\family default
+ dovrà essere risolto dal DNS o inserito nel file '
+\family typewriter
+hosts
+\family default
+' (indirizzo IP attuale 
+\family typewriter
+10.0.255.148
+\family default
+).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L'accesso all'interfaccia web con privilegi di tipo amministrativo, deve
+ essere autorizzato previa creazione di un'utenza sul server Apache, tramite
+ il comando (da eseguire sul server Nagios):
+\end_layout
+
+\begin_layout Quotation
+
+\family typewriter
+# htpasswd /etc/nagios3/htpasswd.users <NOME>
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+Inserire la password come richiesto dal prompt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inoltre, l'utenza 
+\family typewriter
+<NOME>
+\family default
+ andrà inserita nelle opportune direttive di configurazione (
+\family typewriter
+authorized_for_*
+\family default
+) presenti nel file 
+\family typewriter
+\color black
+/etc/nagios3/cg
+\color inherit
+i.cfg
+\family default
+, in base al tipo di profilo amministrativo che si intende conferirgli.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+Non è necessario riavviare nè il server Apache nè il server Nagios.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Si ricorda infine, che per default gli utenti sono autorizzati a vedere
+ le informazioni di configurazione esclusivamente per gli hosts e servizi
+ per i quali essi hanno un contatto.
+\end_layout
+
+\begin_layout Section
+Istallazione dei plugin sugli host Unix
+\end_layout
+
+\begin_layout Standard
+I plugin rappresentano i comandi da eseguire sugli host da monitorare per
+ effettuare i controlli.
+\end_layout
+
+\begin_layout Standard
+Gli host 
+\emph on
+Unix-like
+\emph default
+ necessitano dell'istallazione separata dei plugin.
+ 
+\end_layout
+
+\begin_layout Standard
+Va stabilito se istallare i plugin previa compilazione dei sorgenti oppure
+ utilizzando pacchetti preconfezionati (ad ex.
+ da una distribuzione Linux).
+\end_layout
+
+\begin_layout Standard
+Di seguito si riporta la procedura per l'istallazione tramite compilazione
+\begin_inset Foot
+status open
+
+\begin_layout Standard
+Si ricorda che va preventivamente istallato/configurato un ambiente di sviluppo.
+\end_layout
+
+\begin_layout Standard
+Su macchine RedHat 5.x istallare 
+\emph on
+gcc
+\emph default
+ (con il comando 
+\family typewriter
+# yum install gcc
+\family default
+).
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Enumerate
+eseguire i comandi:
+\newline
+
+\family typewriter
+# groupadd -g 5000 nagios
+\newline
+# useradd -u 5000 -g nagios -d /opt/nagios nagios
+\newline
+#
+ passwd nagios
+\newline
+<inserire la password 
+\begin_inset Quotes eld
+\end_inset
+
+admin01
+\begin_inset Quotes erd
+\end_inset
+
+>
+\end_layout
+
+\begin_layout Enumerate
+copiare 
+\emph on
+nagios-plugins-1.4.12.tar.gz
+\emph default
+ (presente nel repository 
+\emph on
+svn
+\emph default
+ sotto la directory 
+\emph on
+Data
+\emph default
+) su una directory di istallazione, entrare in questa directory ed eseguire
+ come utente 
+\family typewriter
+nagios 
+\family default
+i seguenti comandi 
+\newline
+
+\family typewriter
+# su - nagios
+\newline
+$ tar xvfz nagios-plugins-1.4.12.tar.gz
+\newline
+$ cd nagios-plugins-1.4.12
+\newline
+$
+ ./configure --prefix=/opt/nagios --libexecdir=/opt/nagios/plugins
+\newline
+$ make
+\newline
+$
+ make install
+\end_layout
+
+\begin_layout Standard
+Nel caso di architetture uguali, si può evitare di effettuare le operazioni
+ del punto 2.
+ e copiare semplicemente (preservando possessore, gruppo e permessi) le
+ directory 
+\family typewriter
+/opt/nagios/plugins
+\family default
+ e 
+\family typewriter
+/opt/nagios/share
+\family default
+ da un'altro host che contiene i plugins.
+\end_layout
+
+\begin_layout Standard
+La procedura descritta è stata testata sui sistemi 
+\emph on
+RedHat 5.x
+\emph default
+.
+\end_layout
+
+\begin_layout Section
+Preconfigurazione per il controllo tramite SSH
+\end_layout
+
+\begin_layout Standard
+I server che hanno il servizio 
+\emph on
+ssh
+\emph default
+ attivo possono essere monitorati tramite sessioni ssh, previa una predisposizio
+ne dei sistemi, come di seguito illustrato:
+\end_layout
+
+\begin_layout Enumerate
+sul Server NAGIOS creare la chiave pubblica dell'utente 
+\family typewriter
+nagios
+\family default
+, tramite i comandi
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+Questa operazione va effettuata una sola volta all'istallazione.
+\end_layout
+
+\end_inset
+
+:
+\newline
+
+\family typewriter
+# su - -s /bin/bash nagios
+\newline
+$ ssh-keygen -t dsa
+\newline
+\SpecialChar \ldots{}
+
+\newline
+<non inserire alcuna passphrase>
+\end_layout
+
+\begin_layout Enumerate
+sul Server NAGIOS copiare la chiave 
+\family typewriter
+/var/run/nagios3/.ssh/id_dsa.pub
+\family default
+ nella home dell'utente 
+\family typewriter
+nagios
+\family default
+ dell'host da monitorare tramite il seguente comando, (sempre come utente
+ 
+\family typewriter
+nagios
+\family default
+):
+\newline
+
+\family typewriter
+# su - -s /bin/bash nagios
+\family default
+
+\newline
+
+\family typewriter
+$ ssh-copy-id -i ~/.ssh/id_dsa.pub <INDIRIZZO-IP-HOST>
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+
+\family typewriter
+<INDIRIZZO-IP-HOST> 
+\family default
+indica l'indirizzo ip dell'host da monitorare
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Preconfigurazione per il controllo tramite NRPE (Unix)
+\end_layout
+
+\begin_layout Standard
+Gli host 
+\emph on
+Unix-like
+\emph default
+ possono essere monitorati tramite il plugin 
+\emph on
+NRPE
+\emph default
+ (
+\emph on
+Nagios Remote Plugin Executor
+\emph default
+), facente funzione di agent, previa una predisposizione dei sistemi, come
+ di seguito illustrato
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+Si ricorda che va preventivamente istallato/configurato un ambiente di sviluppo.
+\end_layout
+
+\begin_layout Standard
+Su macchine RedHat 5.x istallare 
+\emph on
+gcc
+\emph default
+ (con il comando 
+\family typewriter
+# yum install gcc
+\family default
+).
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Itemize
+copiare 
+\emph on
+nrpe-2.12.tar.gz
+\emph default
+ (presente nel repository 
+\emph on
+svn
+\emph default
+ sotto la directory 
+\emph on
+Data
+\emph default
+) su una directory di istallazione, entrare in questa directory ed eseguire
+ come utente 
+\family typewriter
+root
+\end_layout
+
+\begin_layout Itemize
+istallazione/configurazione sull'host da monitorare:
+\newline
+
+\family typewriter
+# tar xvzf nrpe-2.12.tar.gz
+\newline
+# cd nrpe-2.12
+\newline
+# ./configure --prefix=/opt/nagios 
+\backslash
+
+\newline
+--libexecdir=/opt/nagios/plugins 
+\backslash
+
+\newline
+--with-nrpe-user=nagios 
+\backslash
+
+\newline
+--with-nrpe-group=nagios 
+\backslash
+
+\newline
+--with-nagios-user=nagios 
+\backslash
+
+\newline
+--with-nagios-group=nagios 
+\backslash
+
+\newline
+--enable-command-args 
+\backslash
+
+\newline
+--enable-ssl
+\newline
+# make
+\newline
+# make install-daemon
+\newline
+# make install-daemon-config
+\family default
+
+\newline
+
+\newline
+- copiare il file di configurazione del demone nrpe, che è nel repository
+ 
+\emph on
+svn
+\emph default
+, (
+\family typewriter
+/opt/nagios/etc/nrpe.cfg
+\family default
+)
+\newline
+- copiare lo script 
+\family typewriter
+nrpe-daemon*
+\family default
+, che è nel repository 
+\emph on
+svn
+\emph default
+, adeguato alla piattaforma in 
+\family typewriter
+/etc/init.d
+\family default
+, rinominandolo 
+\family typewriter
+nrpe-daemon
+\family default
+
+\newline
+- rendere il servizio nrpe-daemon avviabile al boot
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+Per i sistemi 
+\emph on
+RedHat
+\emph default
+ si possono eseguire i seguenti comandi: 
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+# chkconfig --add nrpe-daemon
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+# chkconfig nrpe-daemon on
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Istallazione dei plugin sugli host Windows (NSClient++)
+\end_layout
+
+\begin_layout Standard
+Gli host 
+\emph on
+Windows
+\emph default
+ possono essere monitorati tramite il plugin 
+\emph on
+NSClient++
+\emph default
+ (
+\emph on
+Network Secure Client
+\emph default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Di seguito si riporta l'istallazione e configurazione standard.
+ 
+\end_layout
+
+\begin_layout Itemize
+copiare 
+\emph on
+NSClient++-0.3.7-Win32.msi 
+\emph default
+oppure 
+\emph on
+NSClient++-0.3.7-x64.msi
+\emph default
+ (a seconda dell'architettura e presente nel repository 
+\emph on
+svn
+\emph default
+ sotto la directory 
+\emph on
+Data
+\emph default
+)
+\end_layout
+
+\begin_layout Itemize
+istallare il file 
+\emph on
+.msi 
+\emph default
+seguendo il wizard con le seguenti opzioni:
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+Se il 
+\emph on
+Windows Firewall 
+\emph default
+non è attivo l'istallazione darà una segnalazione d'errore, che può essere
+ ignorata.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+\begin_inset Quotes eld
+\end_inset
+
+Allowed Hosts (...)
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\emph default
+: 10.0.255.148
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+Modules to load
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ : abilitare tutti i moduli tranne quello relativo a 
+\emph on
+NSCA
+\emph default
+.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Configurazione iniziale del file 
+\family typewriter
+C:
+\backslash
+Program Files
+\backslash
+NSClient++
+\backslash
+NSC.ini
+\family default
+ 
+\end_layout
+
+\begin_layout Standard
+Editare il file 
+\family typewriter
+C:
+\backslash
+Program Files
+\backslash
+NSClient++
+\backslash
+NSC.ini
+\family default
+ in modo che risulti:
+\end_layout
+
+\begin_layout Itemize
+sotto la sezione
+\family typewriter
+ [NRPE]
+\family default
+ assicurarsi che ci sia l'opzione:
+\newline
+
+\family typewriter
+allow_arguments=1
+\end_layout
+
+\begin_layout Itemize
+sotto la sezione
+\family typewriter
+ [modules]
+\family default
+ inserire il seguente modulo:
+\newline
+
+\family typewriter
+CheckExternalScripts.dll
+\end_layout
+
+\begin_layout Itemize
+far ripartire il servizio (
+\emph on
+NSClient++
+\emph default
+).
+\end_layout
+
+\begin_layout Standard
+I controlli sono definiti come alias nella sezione 
+\emph on
+[External Alias]
+\emph default
+ .
+\end_layout
+
+\begin_layout Standard
+Per definire i servizi basta utilizzare i comandi 
+\emph on
+check_nrpe_1arg
+\emph default
+ specificando un solo degli 
+\emph on
+[External Alias]
+\emph default
+ come argomento oppure 
+\emph on
+check_nrpe
+\emph default
+ specificando come primo argomento uno degli 
+\emph on
+[External Alias]
+\emph default
+ e inserendo successivamente gli argomenti eventuali separati da spazio.
+\end_layout
+
+\begin_layout Standard
+Per configurazioni avanzate vedere la documentazione.
+\end_layout
+
+\begin_layout Chapter
+Procedure Operative
+\end_layout
+
+\begin_layout Standard
+Di seguito si descrive la struttura e lo scopo e utilizzo dei file di configuraz
+ione.
+\end_layout
+
+\begin_layout Section
+Introduzione
+\end_layout
+
+\begin_layout Standard
+Per monitorare un 
+\emph on
+servizio
+\emph default
+ attivo su un 
+\emph on
+host
+\emph default
+, occorre seguire la procedura seguente.
+\end_layout
+
+\begin_layout Enumerate
+Definire l'
+\emph on
+host
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+occorre inserire un file di definizione per ogni host il cui nome è del
+ tipo 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+\color black
+H-NOMEHOST.cfg
+\family default
+\color inherit
+
+\begin_inset Quotes eld
+\end_inset
+
+, dove 
+\family typewriter
+\color black
+NOMEHOST
+\family default
+\color inherit
+ è il nome dell'host.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Definire il 
+\emph on
+servizio
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+individuare (o creare) il comando appropriato (basato su un plugin esistente
+ o da creare)
+\end_layout
+
+\begin_layout Enumerate
+se il servizio è controllabile da 
+\emph on
+remoto
+\emph default
+ (ad ex.
+ servizio di rete), occorre definire il servizio sul server Nagios
+\end_layout
+
+\begin_layout Enumerate
+se il servizio è controllabile in 
+\emph on
+locale
+\emph default
+ occorre istallare preventivamente il/i 
+\emph on
+plugin
+\emph default
+ sull'host da monitorare, e quindi:
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+nel caso degli host 
+\series bold
+UNIX
+\series default
+ occorre individuare la modalità di comunicazione (
+\emph on
+SSH
+\emph default
+ o 
+\emph on
+NRPE
+\emph default
+) per la comunicazione e quindi definire il servizio sul server Nagios a
+ seconda della modalità scelta
+\end_layout
+
+\begin_layout Enumerate
+nel caso degli host 
+\series bold
+Windows
+\series default
+, poichè la modalità di comunicazione scelta è fissa (
+\emph on
+NRPE
+\emph default
++--
+\emph on
+NSClient++
+\emph default
+), occorre definire il servizio sul server Nagios e configurare l'agent
+ 
+\emph on
+NSClient++
+\emph default
+ (vedi 
+\begin_inset LatexCommand url
+target "http://nsclient.org/nscp/wiki/doc/configuration"
+
+\end_inset
+
+).
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Enumerate
+Definire i contatti
+\end_layout
+
+\begin_layout Enumerate
+Definire i periodi di tempo
+\end_layout
+
+\begin_layout Enumerate
+Eventualmente definire caratteristiche avanzate quali 
+\emph on
+dipendenze
+\emph default
+, 
+\emph on
+escalation
+\emph default
+, 
+\emph on
+variabili custom
+\emph default
+, 
+\emph on
+notifiche
+\emph default
+, 
+\emph on
+eventi
+\emph default
+, 
+\emph on
+check
+\emph default
+ 
+\emph on
+passivi
+\emph default
+, 
+\emph on
+SNMP
+\emph default
+ 
+\emph on
+etc...
+\end_layout
+
+\begin_layout Section
+Definizioni degli host 
+\end_layout
+
+\begin_layout Standard
+Nei seguenti file vanno riportate le caratteristiche comuni a un gruppo
+ di oggetti simili, eventualmente sotto forma di 
+\emph on
+template
+\emph default
+.
+ In particolare vanno definite tutte le opzioni comuni che raramente vengono
+ modificate negli oggetti attuali.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+0TH-hosts_generici.cfg
+\family default
+\color inherit
+ In questo file vanno inserite le definizioni generiche degli host, da cui
+ gli host attuali erediteranno i parametri e le opzioni.
+\end_layout
+
+\begin_layout Standard
+Nei seguenti file vanno riportati le definizioni di hosts che hanno caratteristi
+che comuni dal punto di vista dei servizi da controllare.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+2HG-gruppi_di_hosts.cfg
+\family default
+\color inherit
+ In questo file vanno inserite le definizioni dei gruppi di hosts.
+\end_layout
+
+\begin_layout Standard
+Per monitorare i singoli hosts e i relativi servizi che essi erogano, occorre
+ inserire un file di definizione per ogni host il cui nome è del tipo 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+\color black
+H-NOMEHOST.cfg
+\family default
+\color inherit
+
+\begin_inset Quotes eld
+\end_inset
+
+, dove 
+\family typewriter
+\color black
+NOMEHOST
+\family default
+\color inherit
+ è il nome dell'host.
+\end_layout
+
+\begin_layout Section
+Definizioni dei servizi 
+\end_layout
+
+\begin_layout Standard
+Nel seguente file vanno riportate le caratteristiche comuni a un gruppo
+ di oggetti simili, eventualmente sotto forma di 
+\emph on
+template
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+In particolare vanno definite tutte le opzioni comuni che raramente vengono
+ modificate negli oggetti attuali.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+0TS-servizi_generici.cfg 
+\family default
+\color inherit
+In questo file vanno inserite le definizioni generiche dei servizi, da cui
+ i servizi attuali erediteranno i parametri e le opzioni.
+\end_layout
+
+\begin_layout Standard
+Nel seguente file vanno riportati le definizioni servizi che hanno caratteristic
+he comuni.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+2SG-gruppi_di_servizi.cfg
+\family default
+\color inherit
+ In questo file vanno inserite le definizioni dei gruppi di servizi
+\end_layout
+
+\begin_layout Standard
+Nel caso in cui alcuni servizi sono comuni a 
+\emph on
+gruppi di hosts
+\emph default
+, conviene utilizzare il file:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+3S-servizi_comuni.cfg
+\family default
+\color inherit
+ In questo file vanno inserite le definizioni dei servizi comuni agli hosts
+ del gruppo preventivamente definito (nel file 
+\family typewriter
+\color black
+2HG-gruppi_di_hosts.cfg
+\family default
+\color inherit
+).
+\end_layout
+
+\begin_layout Standard
+Si ricorda che per 
+\emph on
+servizio
+\emph default
+ si intende il 
+\series bold
+servizio da controllare
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+Per la definizione di un
+\emph on
+ servizio 
+\emph default
+occorre procedere come segue:
+\end_layout
+
+\begin_layout Itemize
+Individuare o creare il 
+\emph on
+comando
+\emph default
+ appropriato, eventualmente individuando o creando il 
+\emph on
+plugin
+\emph default
+ appropriato (ed eventualmente istallarlo sull'host da controllare)
+\end_layout
+
+\begin_layout Itemize
+Definire il 
+\emph on
+servizio
+\end_layout
+
+\begin_layout Section
+Elenco dei plugins predefiniti: UNIX
+\end_layout
+
+\begin_layout Standard
+Nel server Nagios, i plugins sono istallati nella directory 
+\family typewriter
+\color black
+/usr/lib/nagios/plugins
+\family default
+\color inherit
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Nell'host UNIX da monitorare i plugins sono istallati nella directory 
+\family typewriter
+\color black
+/opt/nagios/plugins
+\family default
+\color inherit
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Di seguito un elenco dei plugins disponibili predefiniti, istallati sul
+ server 
+\emph on
+Nagios
+\emph default
+
+\begin_inset Foot
+status collapsed
+
+\begin_layout Standard
+La descrizione del singolo plugin (ove presente) è stata ottenuta eseguendo
+ lo stesso con l'opzione 
+\family typewriter
+\color black
+--help
+\family default
+\color inherit
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+check_apt This plugin checks for software updates on systems that use package
+ management systems based on the apt-get(8) command found in Debian GNU/Linux
+\end_layout
+
+\begin_layout Description
+check_bgpstate monitors all BGP sessions
+\end_layout
+
+\begin_layout Description
+check_breeze This plugin reports the signal strength of a Breezecom wireless
+ equipment
+\end_layout
+
+\begin_layout Description
+check_by_ssh This plugin uses SSH to execute commands on a remote host
+\end_layout
+
+\begin_layout Description
+check_clamd This plugin tests CLAMD connections with the specified host
+ (or unix socket).
+\end_layout
+
+\begin_layout Description
+check_cluster Host/Service Cluster Plugin for Nagios 2
+\end_layout
+
+\begin_layout Description
+check_dhcp This plugin tests the availability of DHCP servers on a network.
+\end_layout
+
+\begin_layout Description
+check_dig This plugin test the DNS service on the specified host using dig
+\end_layout
+
+\begin_layout Description
+check_disk This plugin checks the amount of used disk space on a mounted
+ file system and generates an alert if free space is less than one of the
+ threshold values
+\end_layout
+
+\begin_layout Description
+check_disk_smb Perl Check SMB Disk plugin for Nagios
+\end_layout
+
+\begin_layout Description
+check_dns This plugin uses the nslookup program to obtain the IP address
+ for the given host/domain query.
+ An optional DNS server to use may be specified.
+ If no DNS server is specified, the default server(s) specified in /etc/resolv.co
+nf will be used.
+\end_layout
+
+\begin_layout Description
+check_dummy This plugin will simply return the state corresponding to the
+ numeric value of the <state> argument with optional text
+\end_layout
+
+\begin_layout Description
+check_file_age 
+\end_layout
+
+\begin_layout Description
+check_flexlm Check available flexlm license managers
+\end_layout
+
+\begin_layout Description
+check_fping This plugin will use the fping command to ping the specified
+ host for a fast check Note that it is necessary to set the suid flag on
+ fping.
+\end_layout
+
+\begin_layout Description
+check_ftp This plugin tests FTP connections with the specified host (or
+ unix socket).
+\end_layout
+
+\begin_layout Description
+check_game This plugin tests game server connections with the specified
+ host.
+\end_layout
+
+\begin_layout Description
+check_hpjd This plugin tests the STATUS of an HP printer with a JetDirect
+ card.
+ Net-snmp must be installed on the computer running the plugin.
+\end_layout
+
+\begin_layout Description
+check_http This plugin tests the HTTP service on the specified host.
+ It can test normal (http) and secure (https) servers, follow redirects,
+ search for strings and regular expressions, check connection times, and
+ report on certificate expiration times.
+\end_layout
+
+\begin_layout Description
+check_icmp 
+\end_layout
+
+\begin_layout Description
+check_ide_smart This plugin checks a local hard drive with the (Linux specific)
+ SMART interface [http://smartlinux.sourceforge.net/smart/index.php].
+\end_layout
+
+\begin_layout Description
+check_ifoperstatus plugin for Nagios monitors operational status of a particular
+ network interface on the target host
+\end_layout
+
+\begin_layout Description
+check_ifstatus plugin for Nagios monitors operational status of each network
+ interface on the target host
+\end_layout
+
+\begin_layout Description
+check_imap This plugin tests IMAP connections with the specified host (or
+ unix socket).
+\end_layout
+
+\begin_layout Description
+check_ircd Perl Check IRCD plugin for Nagios
+\end_layout
+
+\begin_layout Description
+check_jabber This plugin tests JABBER connections with the specified host
+ (or unix socket).
+\end_layout
+
+\begin_layout Description
+check_ldap 
+\end_layout
+
+\begin_layout Description
+check_ldaps 
+\end_layout
+
+\begin_layout Description
+check_linux_raid
+\end_layout
+
+\begin_layout Description
+check_load This plugin tests the current system load average.
+\end_layout
+
+\begin_layout Description
+check_log Log file pattern detector plugin for Nagios
+\end_layout
+
+\begin_layout Description
+check_mailq Checks the number of messages in the mail queue (supports multiple
+ sendmail queues, qmail) Feedback/patches to support non-sendmail mailqueue
+ welcome
+\end_layout
+
+\begin_layout Description
+check_mrtg v1991 This plugin will check either the average or maximum value
+ of one of the two variables recorded in an MRTG log file.
+\end_layout
+
+\begin_layout Description
+check_mrtgtraf This plugin will check the incoming/outgoing transfer rates
+ of a router, switch, etc recorded in an MRTG log.
+ If the newest log entry is older than <expire_minutes>, a WARNING status
+ is returned.
+ If either the incoming or outgoing rates exceed the <icl> or <ocl> thresholds
+ (in Bytes/sec), a CRITICAL status results.
+ If either of the rates exceed the <iwl> or <owl> thresholds (in Bytes/sec),
+ a WARNING status results.
+\end_layout
+
+\begin_layout Description
+check_mysql This program tests connections to a MySQL server
+\end_layout
+
+\begin_layout Description
+check_mysql_query This program checks a query result against threshold levels
+\end_layout
+
+\begin_layout Description
+check_nagios This plugin checks the status of the Nagios process on the
+ local machine The plugin will check to make sure the Nagios status log
+ is no older than the number of minutes specified by the expires option.
+ It also checks the process table for a process matching the command argument.
+\end_layout
+
+\begin_layout Description
+check_nntp This plugin tests NNTP connections with the specified host (or
+ unix socket).
+\end_layout
+
+\begin_layout Description
+check_nntps This plugin tests NNTPS connections with the specified host
+ (or unix socket).
+\end_layout
+
+\begin_layout Description
+check_nrpe NRPE Plugin for Nagios
+\end_layout
+
+\begin_layout Description
+check_nt This plugin collects data from the NSClient service running on
+ a Windows NT/2000/XP/2003 server.
+\end_layout
+
+\begin_layout Description
+check_ntp This plugin checks the selected ntp server.
+ WARNING: check_ntp is deprecated.
+ Please use check_ntp_peer or check_ntp_time istead.
+\end_layout
+
+\begin_layout Description
+check_ntp_peer This plugin checks the selected ntp server
+\end_layout
+
+\begin_layout Description
+check_ntp_time This plugin checks the clock offset with the ntp server
+\end_layout
+
+\begin_layout Description
+check_nwstat This plugin attempts to contact the MRTGEXT NLM running on
+ a Novell server to gather the requested system information.
+\end_layout
+
+\begin_layout Description
+check_oracle Check Oracle status
+\end_layout
+
+\begin_layout Description
+check_overcr This plugin attempts to contact the Over-CR collector daemon
+ running on the remote UNIX server in order to gather the requested system
+ information.
+\end_layout
+
+\begin_layout Description
+check_pgsql Test whether a PostgreSQL Database is accepting connections.
+\end_layout
+
+\begin_layout Description
+check_ping Use ping to check connection statistics for a remote host.
+\end_layout
+
+\begin_layout Description
+check_pop This plugin tests POP connections with the specified host (or
+ unix socket).
+\end_layout
+
+\begin_layout Description
+check_procs Checks all processes and generates WARNING or CRITICAL states
+ if the specified metric is outside the required threshold ranges.
+ The metric defaults to number of processes.
+ Search filters can be applied to limit the processes to check.
+\end_layout
+
+\begin_layout Description
+check_radius Tests to see if a RADIUS server is accepting connections.
+\end_layout
+
+\begin_layout Description
+check_real This plugin tests the REAL service on the specified host.
+\end_layout
+
+\begin_layout Description
+check_rpc Check if a rpc service is registered and running using rpcinfo
+ -H host -C rpc_command 
+\end_layout
+
+\begin_layout Description
+check_sensors This plugin checks hardware status using the lm_sensors package.
+\end_layout
+
+\begin_layout Description
+check_simap This plugin tests SIMAP connections with the specified host
+ (or unix socket).
+\end_layout
+
+\begin_layout Description
+check_smtp This plugin will attempt to open an SMTP connection with the
+ host.
+\end_layout
+
+\begin_layout Description
+check_snmp Check status of remote machines and obtain system information
+ via SNMP
+\end_layout
+
+\begin_layout Description
+check_spop This plugin tests SPOP connections with the specified host (or
+ unix socket).
+\end_layout
+
+\begin_layout Description
+check_ssh Try to connect to an SSH server at specified server and port
+\end_layout
+
+\begin_layout Description
+check_ssmtp This plugin tests SSMTP connections with the specified host
+ (or unix socket).
+\end_layout
+
+\begin_layout Description
+check_swap Check swap space on local machine.
+\end_layout
+
+\begin_layout Description
+check_tcp This plugin tests TCP connections with the specified host (or
+ unix socket).
+\end_layout
+
+\begin_layout Description
+check_time This plugin will check the time on the specified host.
+\end_layout
+
+\begin_layout Description
+check_udp This plugin tests UDP connections with the specified host (or
+ unix socket).
+\end_layout
+
+\begin_layout Description
+check_ups This plugin tests the UPS service on the specified host.
+ Network UPS Tools from www.networkupstools.org must be running for thisplugin
+ to work.
+\end_layout
+
+\begin_layout Description
+check_users This plugin checks the number of users currently logged in on
+ the local system and generates an error if the number exceeds the thresholds
+ specified.
+\end_layout
+
+\begin_layout Description
+check_wave 
+\end_layout
+
+\begin_layout Subsection
+Elenco dei comandi predefiniti
+\end_layout
+
+\begin_layout Standard
+I comandi vengono definiti nei file contenuti nella directory 
+\family typewriter
+\color black
+/etc/nagios-plugins/config
+\family default
+\color inherit
+ del server Nagios e hanno nomi terminanti con 
+\begin_inset Quotes erd
+\end_inset
+
+
+\family typewriter
+\color black
+.cfg
+\family default
+\color inherit
+
+\begin_inset Quotes eld
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Di seguito un elenco dei comandi disponibili predefiniti, istallati sul
+ server Nagios, elencati per 
+\series bold
+file
+\series default
+, 
+\family typewriter
+\emph on
+nome
+\family default
+\emph default
+ e 
+\family typewriter
+plugin eseguito
+\family default
+:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+apt.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_apt
+\emph default
+ /usr/lib/nagios/plugins/check_apt 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_apt_distupgrade
+\emph default
+ /usr/lib/nagios/plugins/check_apt -d 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+breeze.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_breeze
+\emph default
+ /usr/lib/nagios/plugins/check_breeze -H '$HOSTADDRESS$' -w '$ARG1$' -c
+ '$ARG2$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+check_nrpe.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nrpe
+\emph default
+ /usr/lib/nagios/plugins/check_nrpe -H $HOSTADDRESS$ -c $ARG1$ -a $ARG2$
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nrpe_1arg
+\emph default
+ /usr/lib/nagios/plugins/check_nrpe -H $HOSTADDRESS$ -c $ARG1$
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+dhcp.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_dhcp
+\emph default
+ /usr/lib/nagios/plugins/check_dhcp -s '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_dhcp_interface
+\emph default
+ /usr/lib/nagios/plugins/check_dhcp -s '$HOSTADDRESS$' -i '$ARG1$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+disk.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk
+\emph default
+ /usr/lib/nagios/plugins/check_disk -w '$ARG1$' -c '$ARG2$' -p '$ARG3$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_disk
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$'
+\newline
+ -C '/opt/nagios/plugins
+/check_disk -w ''$ARG1$'' -c ''$ARG2$'' -p ''$ARG3$''' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_all_disks
+\emph default
+ /usr/lib/nagios/plugins/check_disk -w '$ARG1$' -c '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_all_disks
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$'
+\newline
+ -C '/opt/nagios/plugins
+/check_disk -w ''$ARG1$'' -c ''$ARG2$''' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_disk_4
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$'
+\newline
+ -C '/opt/nagios/plugins
+/check_disk -w ''$ARG1$'' -c ''$ARG2$'' -p ''$ARG3$''' -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+disk-smb.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb -H '$ARG1$' -s '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb_workgroup
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb -H '$ARG1$' 
+\newline
+-s '$ARG2$' -W '$ARG3$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb_host
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb -a '$HOSTADDRESS$' 
+\newline
+-H '$ARG1$' -s
+ '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb_workgroup_host
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb -a '$HOSTADDRESS$' 
+\newline
+-H '$ARG1$' -s
+ '$ARG2$' -W '$ARG3$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb_user
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb -H '$ARG1$' -s '$ARG2$'
+\newline
+ -u '$ARG3$'
+ -p '$ARG4$' -w '$ARG5$' -c '$ARG6$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb_workgroup_user
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb -H '$ARG1$'
+\newline
+ -s '$ARG2$' -W '$ARG3$'
+ -u '$ARG4$' -p '$ARG5$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb_host_user
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb -a '$HOSTADDRESS$'
+\newline
+ -H '$ARG1$' -s
+ '$ARG2$' -u '$ARG3$' -p '$ARG4$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_disk_smb_workgroup_host_user
+\emph default
+ /usr/lib/nagios/plugins/check_disk_smb 
+\newline
+-a '$HOSTADDRESS$' -H '$ARG1$' -s
+ '$ARG2$' -W '$ARG3$' -u '$ARG4$' -p '$ARG5$'
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+dns.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_dns
+\emph default
+ /usr/lib/nagios/plugins/check_dns -H www.google.com -s '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_dig
+\emph default
+ /usr/lib/nagios/plugins/check_dig -H '$HOSTADDRESS$' -l '$ARG1$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+dummy.cfg
+\series default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+return-ok
+\emph default
+ /usr/lib/nagios/plugins/check_dummy 0 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+return-warning
+\emph default
+ /usr/lib/nagios/plugins/check_dummy 1 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+return-critical
+\emph default
+ /usr/lib/nagios/plugins/check_dummy 2 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+return-unknown
+\emph default
+ /usr/lib/nagios/plugins/check_dummy 3 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+return-numeric
+\emph default
+ /usr/lib/nagios/plugins/check_dummy '$ARG1$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+flexlm.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_flexlm
+\emph default
+ /usr/lib/nagios/plugins/check_flexlm -F '$ARG1$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+ftp.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ftp
+\emph default
+ /usr/lib/nagios/plugins/check_ftp -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ftp_4
+\emph default
+ /usr/lib/nagios/plugins/check_ftp -H '$HOSTADDRESS$' -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+hppjd.cfg
+\series default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_hpjd
+\emph default
+ /usr/lib/nagios/plugins/check_hpjd -H '$HOSTADDRESS$' -C public 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+http.cfg
+\series default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_http
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -I '$HOSTADDRESS$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_httpname
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTNAME' -I '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_http2
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$ARG1$' -I '$HOSTADDRESS$' 
+\newline
+-w '$ARG2$'
+ -c '$ARG3$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_squid
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -p '$ARG1$' 
+\newline
+-u '$ARG2$'
+ -e 'HTTP/1.0 200 OK' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' -I '$HOSTADDRESS$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https_hostname
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl 
+\newline
+-H '$HOSTNAME$' -I '$HOSTADDRESS$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https_auth
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' -I '$HOSTADDRESS$'
+ -a '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https_auth_hostname
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTNAME$' -I '$HOSTADDRESS$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_cups
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -p 631 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_http_4
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -I '$HOSTADDRESS$'
+ -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_httpname_4
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTNAME$' -I '$HOSTADDRESS$' -4
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_http2_4
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$ARG1$' -I '$HOSTADDRESS$' 
+\newline
+-w '$ARG2$'
+ -c '$ARG3$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_squid_4
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -p '$ARG1$' ù
+\newline
+-u '$ARG2$'
+ -e 'HTTP/1.0 200 OK' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https_4
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTADDRESS$' 
+\newline
+-I '$HOSTADDRESS$'
+ -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https_hostname_4
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl 
+\newline
+-H '$HOSTNAME$' -I '$HOSTADDRESS$'
+ -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https_auth_4
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl 
+\newline
+-H '$HOSTADDRESS$' -I '$HOSTADDRESS$'
+ -a '$ARG1$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_https_auth_hostname_4
+\emph default
+ /usr/lib/nagios/plugins/check_http --ssl -H '$HOSTNAME'
+\newline
+ -I '$HOSTADDRESS$'
+ -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_cups_4
+\emph default
+ /usr/lib/nagios/plugins/check_http -H '$HOSTADDRESS$' -p 631 -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+ifstatus.cfg
+\series default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ifstatus
+\emph default
+ /usr/lib/nagios/plugins/check_ifstatus -H '$HOSTADDRESS$' -C '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ifstatus_exclude
+\emph default
+ /usr/lib/nagios/plugins/check_ifstatus -H '$HOSTADDRESS$' 
+\newline
+-C '$ARG1$' -x
+ '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ifoperstatus_ifindex
+\emph default
+ /usr/lib/nagios/plugins/check_ifoperstatus 
+\newline
+-H '$HOSTADDRESS$' -C '$ARG1$'
+ -k '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ifoperstatus_ifdescr
+\emph default
+ /usr/lib/nagios/plugins/check_ifoperstatus 
+\newline
+-H '$HOSTADDRESS$' -C '$ARG1$'
+ -d '$ARG2$' }
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+ldap.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ldap
+\emph default
+ /usr/lib/nagios/plugins/check_ldap -H '$HOSTADDRESS$' -b '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ldaps
+\emph default
+ /usr/lib/nagios/plugins/check_ldaps -H '$HOSTADDRESS$' -b '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ldap_4
+\emph default
+ /usr/lib/nagios/plugins/check_ldap -H '$HOSTADDRESS$' -b '$ARG1$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ldaps_4
+\emph default
+ /usr/lib/nagios/plugins/check_ldaps -H '$HOSTADDRESS$' -b '$ARG1$' -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+load.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_load
+\emph default
+ /usr/lib/nagios/plugins/check_load 
+\newline
+--warning='$ARG1$,$ARG2$,$ARG3$' --critical=
+'$ARG4$,$ARG5$,$ARG6$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_load
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$' 
+\newline
+-C '/opt/nagios/plugins
+/check_load 
+\newline
+--warning=''$ARG1$,$ARG2$,$ARG3$'' --critical=''$ARG4$,$ARG5$,$ARG6$
+''' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+mail.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_pop
+\emph default
+ /usr/lib/nagios/plugins/check_pop -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_smtp
+\emph default
+ /usr/lib/nagios/plugins/check_smtp -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ssmtp
+\emph default
+ /usr/lib/nagios/plugins/check_ssmtp -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_imap
+\emph default
+ /usr/lib/nagios/plugins/check_imap -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_spop
+\emph default
+ /usr/lib/nagios/plugins/check_pop -p 995 -H '$HOSTADDRESS$' -S 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_simap
+\emph default
+ /usr/lib/nagios/plugins/check_imap -p 993 -H '$HOSTADDRESS$' -S 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mailq_sendmail
+\emph default
+ /usr/lib/nagios/plugins/check_mailq -w '$ARG1$' 
+\newline
+-c '$ARG2$' -M sendmail
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mailq_postfix
+\emph default
+ /usr/lib/nagios/plugins/check_mailq -w '$ARG1$' 
+\newline
+-c '$ARG2$' -M postfix
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mailq_exim
+\emph default
+ /usr/lib/nagios/plugins/check_mailq -w '$ARG1$' 
+\newline
+-c '$ARG2$' -M exim 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mailq_qmail
+\emph default
+ /usr/lib/nagios/plugins/check_mailq -w '$ARG1$' 
+\newline
+-c '$ARG2$' -M qmail 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_pop_4
+\emph default
+ /usr/lib/nagios/plugins/check_pop -H '$HOSTADDRESS$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_smtp_4
+\emph default
+ /usr/lib/nagios/plugins/check_smtp -H '$HOSTADDRESS$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ssmtp_4
+\emph default
+ /usr/lib/nagios/plugins/check_ssmtp -H '$HOSTADDRESS$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_imap_4
+\emph default
+ /usr/lib/nagios/plugins/check_imap -H '$HOSTADDRESS$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_spop_4
+\emph default
+ /usr/lib/nagios/plugins/check_pop -p 995 -H '$HOSTADDRESS$' -S -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_simap_4
+\emph default
+ /usr/lib/nagios/plugins/check_imap -p 993 -H '$HOSTADDRESS$' -S -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+mrtg.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mrtg
+\emph default
+ /usr/lib/nagios/plugins/check_mrtg '$ARG1$' 10 AVG '$ARG2$' 
+\newline
+'$ARG3$' '$ARG4$'
+ '$ARG5$' '$ARG6$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+traffic_average
+\emph default
+ /usr/lib/nagios/plugins/check_mrtgtraf '$ARG1$' 10 AVG '$ARG2$' 
+\newline
+'$ARG3$'
+ '$ARG4$' '$ARG5$'
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+mysql.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mysql
+\emph default
+ /usr/lib/nagios/plugins/check_mysql -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mysql_cmdlinecred
+\emph default
+ /usr/lib/nagios/plugins/check_mysql -H '$HOSTADDRESS$' 
+\newline
+-u '$ARG1$' -p '$ARG2$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_mysql_database
+\emph default
+ /usr/lib/nagios/plugins/check_mysql -d '$ARG3$' 
+\newline
+-H '$HOSTADDRESS$' -u '$ARG1$'
+ -p '$ARG2$'
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+netware.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netware_logins
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v "LOGINS" -w
+ '$ARG1$' -c '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nwstat_conns
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v CONNS -w '$ARG1$'
+ -c '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netware_1load
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v "LOAD1" -w 70
+ -c 90 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netware_5load
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v "LOAD5" -w 70
+ -c 90 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netware_15load
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v "LOAD15" -w
+ 70 -c 90 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nwstat_vol_p
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v VPF'$ARG1$'
+ -w '$ARG2$' -c '$ARG3$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nwstat_vol_k
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v VKF'$ARG1$'
+ -w '$ARG2$' -c '$ARG3$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nwstat_ltch
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v LTCH -w '$ARG1$'
+ -c '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nwstat_puprb
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v PUPRB -w '$ARG1$'
+ -c '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nwstat_dsdb
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' -v DSDB 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netware_abend
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v "ABENDS" -w
+ 10 -c 30 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nwstat_csprocs
+\emph default
+ /usr/lib/nagios/plugins/check_nwstat -H '$HOSTADDRESS$' 
+\newline
+-v CSPROCS -w '$ARG1$'
+ -c '$ARG2$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+news.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nntp
+\emph default
+ /usr/lib/nagios/plugins/check_nntp -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nntp_4
+\emph default
+ /usr/lib/nagios/plugins/check_nntp -H '$HOSTADDRESS$' -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+nt.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_nt
+\emph default
+ /usr/lib/nagios/plugins/check_nt -H '$HOSTADDRESS$' -v '$ARG1$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+ntp.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ntp
+\emph default
+ /usr/lib/nagios/plugins/check_ntp_peer -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ntp_ntpq
+\emph default
+ /usr/lib/nagios/plugins/check_ntp_peer -H '$HOSTADDRESS$' 
+\newline
+-j 10 -k 15 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_time
+\emph default
+ /usr/lib/nagios/plugins/check_time -H '$HOSTADDRESS$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+pgsql.cfg
+\series default
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_pgsql
+\emph default
+ /usr/lib/nagios/plugins/check_pgsql -H '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_pgsql_4
+\emph default
+ /usr/lib/nagios/plugins/check_pgsql -H '$HOSTADDRESS$' -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+ping.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ping
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' -w '$ARG1$' 
+\newline
+-c '$ARG2$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-host-alive
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-printer-alive
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-switch-alive
+\emph default
+ /usr/lib/nagios/plugins/check_ping '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-router-alive
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ping_4
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' -w '$ARG1$' 
+\newline
+-c '$ARG2$'
+ -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-host-alive_4
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-printer-alive_4
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-switch-alive_4
+\emph default
+ /usr/lib/nagios/plugins/check_ping '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-router-alive_4
+\emph default
+ /usr/lib/nagios/plugins/check_ping -H '$HOSTADDRESS$' 
+\newline
+-w 5000,100% -c 5000,100%
+ -p 1 -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+procs.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_procs
+\emph default
+ /usr/lib/nagios/plugins/check_procs -w '$ARG1$' -c '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_procs
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$' 
+\newline
+-C '/opt/nagios/plugins
+/check_procs -w ''$ARG1$'' -c ''$ARG2$''' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_procs_zombie
+\emph default
+ /usr/lib/nagios/plugins/check_procs -w '$ARG1$' -c '$ARG2$' -s Z 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_procs_zombie
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$' 
+\newline
+-C '/opt/nagios/plugins
+/check_procs -w ''$ARG1$'' -c ''$ARG2$'' -s Z' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_procs_httpd
+\emph default
+ /usr/lib/nagios/plugins/check_procs -w 5:'$ARG1$' -c 1:'$ARG2$' -C httpd
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_procs_httpd
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$' 
+\newline
+-C '/opt/nagios/plugins
+/check_procs -w 5:''$ARG1$'' -c 1:''$ARG2$'' -C httpd' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+radius.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_radius
+\emph default
+ /usr/lib/nagios/plugins/check_radius 
+\newline
+-F /etc/radiusclient/radiusclient.conf
+ -H '$HOSTADDRESS$' -P '$ARG4$' -t '$ARG3$'
+\newline
+-u '$ARG1$' -p '$ARG2$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+real.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_real_url
+\emph default
+ /usr/lib/nagios/plugins/check_real '$HOSTADDRESS$' -p '$ARG1$' 
+\newline
+-wt '$ARG2$'
+ -ct '$ARG3$' -to 5 -u '$ARG4$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_real
+\emph default
+ /usr/lib/nagios/plugins/check_real '$HOSTADDRESS$' -p '$ARG1$' 
+\newline
+-wt '$ARG2$'
+ -ct '$ARG3$' -to 5 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+rpc-nfs.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-rpc
+\emph default
+ /usr/lib/nagios/plugins/check_rpc -H '$HOSTADDRESS$' -C '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check-nfs 
+\emph default
+/usr/lib/nagios/plugins/check_rpc -H '$HOSTADDRESS$' -C nfs -c2,3 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+snmp.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_load
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.4.1.2021.
+10.1.5.1,.1.3.6.1.4.1.2021.10.1.5.2,.1.3.6.1.4.1.2021.10.1.5.3
+\newline
+ -w :'$ARG2$',:'$ARG3$',:'$ARG4$' -c
+ :'$ARG5$',:'$ARG6$',:'$ARG7$' -l load 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_cpustats
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.4.1.2021.
+11.9.0,.1.3.6.1.4.1.2021.11.10.0,.1.3.6.1.4.1.2021.11.11.0 
+\newline
+-l 'CPU usage (user system idle)' -u
+ '%' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_procname
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.4.1.2021.
+2.1.5.'$ARG2$' -w '$ARG3$':'$ARG4$' -c '$ARG5$':'$ARG6$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_disk
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.4.1.2021.
+9.1.7.'$ARG2$',.1.3.6.1.4.1.2021.9.1.9.'$ARG2$' 
+\newline
+-w '$ARG3$':,:'$ARG4$' -c '$ARG5$':,:'$ARG6$'
+ -u 'kB free (','% used)' -l 'disk space' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_mem
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$'
+\newline
+ -o .1.3.6.1.4.1.2021.
+4.6.0,.1.3.6.1.4.1.2021.4.5.0 -w '$ARG2$': -c '$ARG3$': 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_swap
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$'
+\newline
+ -o .1.3.6.1.4.1.2021.
+4.4.0,.1.3.6.1.4.1.2021.4.3.0 -w '$ARG2$': -c '$ARG3$': 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_procs
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o host.hrSyst
+em.hrSystemProcesses -w :'$ARG2$' -c :'$ARG3$' -l processes 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_users
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o host.hrSyst
+em.hrSystemNumUsers -w :'$ARG2$' -c :'$ARG3$' -l users 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_mem2
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o host.hrStor
+age.hrStorageTable.hrStorageEntry.hrStorageUsed.'$ARG2$',
+\newline
+ host.hrStorage.hrStorageTabl
+e.hrStorageEntry.hrStorageSize.'$ARG2$' -w '$ARG3$' -c '$ARG4$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_swap2
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o host.hrStor
+age.hrStorageTable.hrStorageEntry.hrStorageUsed.'$ARG2$',
+\newline
+host.hrStorage.hrStorageTable.
+hrStorageEntry.hrStorageSize.'$ARG2$' -w '$ARG3$' -c '$ARG4$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_mem3
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o host.hrStor
+age.hrStorageTable.hrStorageEntry.hrStorageUsed.'$ARG2$',
+\newline
+host.hrStorage.hrStorageTable.
+hrStorageEntry.hrStorageSize.'$ARG2$' -w '$ARG3$' -c '$ARG4$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_swap3
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o host.hrStor
+age.hrStorageTable.hrStorageEntry.hrStorageUsed.'$ARG2$',
+\newline
+host.hrStorage.hrStorageTable.
+hrStorageEntry.hrStorageSize.'$ARG2$' -w '$ARG3$' -c '$ARG4$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_disk2
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o host.hrStor
+age.hrStorageTable.hrStorageEntry.hrStorageUsed.'$ARG2$' 
+\newline
+-w '$ARG3$' -c '$ARG4$'
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_tcpopen
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o tcp.tcpCurr
+Estab.0 -w '$ARG2$' -c '$ARG3$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+snmp_tcpstats
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o tcp.tcpActi
+veOpens.0,tcp.tcpPassiveOpens.0,tcp.tcpInSegs.0,
+\newline
+tcp.tcpOutSegs.0,tcp.tcpRetransSegs.0
+ -l 'TCP stats' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_snmp_bgpstate
+\emph default
+ /usr/lib/nagios/plugins/check_bgpstate '$HOSTADDRESS$' -c '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netapp_uptime
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.2.1.1.3.0
+ --delimiter=')' -l "Uptime is" 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netapp_cpuload
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.4.1.789.1.
+2.1.3.0 -w 90 -c 95 -u '%' -l "CPU LOAD " 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_netapp_numdisks
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.4.1.789.1.
+6.4.1.0,.1.3.6.1.4.1.789.1.6.4.2.0,
+\newline
+.1.3.6.1.4.1.789.1.6.4.8.0,.1.3.6.1.4.1.789.1.6.4.7.0 
+\newline
+-u 'Total Disks','Active','Spa
+re','Failed' -l "" 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_compaq_thermalCondition
+\emph default
+ /usr/lib/nagios/plugins/check_snmp -H '$HOSTADDRESS$' -C '$ARG1$' 
+\newline
+-o .1.3.6.1.4.1.232.6.
+2.1.0,.1.3.6.1.4.1.232.6.2.2.0,.1.3.6.1.4.1.232.6.2.3.0,
+\newline
+.1.3.6.1.4.1.232.6.2.4.0 -u 'ThermalCondition','ThermalTemp
+','ThermalSystem',
+\newline
+'ThermalCPUFan' -w 2:2,2:2,2:2,2:2 -c 1:2,1:2,1:2,1:2
+ -l "Thermal status " 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+ssh.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ssh
+\emph default
+ /usr/lib/nagios/plugins/check_ssh '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ssh_port
+\emph default
+ /usr/lib/nagios/plugins/check_ssh -p '$ARG1$' '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ssh_4
+\emph default
+ /usr/lib/nagios/plugins/check_ssh -4 '$HOSTADDRESS$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_ssh_port_4
+\emph default
+ /usr/lib/nagios/plugins/check_ssh -4 -p '$ARG1$' '$HOSTADDRESS$' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+tcp_udp.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_tcp
+\emph default
+ /usr/lib/nagios/plugins/check_tcp -H '$HOSTADDRESS$' -p '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_udp
+\emph default
+ /usr/lib/nagios/plugins/check_udp -H '$HOSTADDRESS$' -p '$ARG1$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_tcp_4
+\emph default
+ /usr/lib/nagios/plugins/check_tcp -H '$HOSTADDRESS$' -p '$ARG1$' -4 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_udp_4
+\emph default
+ /usr/lib/nagios/plugins/check_udp -H '$HOSTADDRESS$' -p '$ARG1$' -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+telnet.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_telnet
+\emph default
+ /usr/lib/nagios/plugins/check_tcp -H '$HOSTADDRESS$' -p 23 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_telnet_4
+\emph default
+ /usr/lib/nagios/plugins/check_tcp -H '$HOSTADDRESS$' -p 23 -4 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+users.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_users 
+\emph default
+/usr/lib/nagios/plugins/check_users -w '$ARG1$' -c '$ARG2$' 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+ssh_users
+\emph default
+ /usr/lib/nagios/plugins/check_by_ssh -H '$HOSTADDRESS$' 
+\newline
+-C '/opt/nagios/plugins
+/check_users -w ''$ARG1$'' -c ''$ARG2$''' 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+vsz.cfg 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+check_vsz
+\emph default
+ /usr/lib/nagios/plugins/check_vsz -w 8096 -c 16182 -C httpd 
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Elenco dei plugin predefiniti: Windows
+\end_layout
+
+\begin_layout Standard
+Nell'host Windows da monitorare i plugins sono contenuti in moduli istallati
+ nella directory 
+\family typewriter
+\color black
+C:
+\backslash
+Program Files
+\backslash
+/plugins
+\family default
+\color inherit
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Di seguito riportiamo le liste dei moduli predefiniti sia quelli dedicati
+ al generale funzionamento di 
+\emph on
+NSClient++
+\emph default
+ sia quelli che contengono i plugins destinati ai controlli da parte del
+ server 
+\emph on
+Nagios
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+Elenco dei moduli generali
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+FileLogger.dll 
+\series default
+
+\newline
+A module that logs all messages to file if no logging module is loaded no
+ error messages will be logged thus it is hard to find problems.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CheckExternalScripts.dll
+\series default
+
+\newline
+This module allows you to check external scripts and/or programs.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+LUAScript.dll 
+\series default
+
+\newline
+This module allows you to write and change checks in the Lua scripting language.
+ For a quite "guide" on how to write scripts for NSClient++ see the LUAScript/gu
+ide page.
+ For information on the Lua scripting language and built-in modules and
+ commands refer to the official Lua pages at: http://www.lua.org/ and http://lua-u
+sers.org/wiki/SampleCode
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+NRPEListener.dll
+\series default
+
+\newline
+This module accepts incoming NRPE connections and responds by executing
+ various checks and returns their result.
+ To use this you need to have check_nrpe or another NRPE client.
+ This is similar to check_nt (NSClient) but much more flexible and supports
+ encryption.
+ This only drawback is that it lacks any authorization.
+ 
+\newline
+As this module has the ability to generate command handlers by configuration
+ there are command handlers but nothing built in.
+ This is present for compatiblity only it is suggested to use the [CheckExternal
+Scripts] instead.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+NSClientListener.dll
+\series default
+
+\newline
+The NSClientListener module is written to allow backwards compatibility
+ with the old NSClient and check_nt.
+ It has a listener (server) that accepts checks from the check_nt command
+ and responds accordingly.
+ Due to the nature of the protocol and the limitation in the client NRPE
+ is recommended but if you like this works just fine for "simple things".
+\newline
+The
+ following check_nt checks are supported.
+\newline
+* 
+\emph on
+CLIENTVERSION
+\emph default
+
+\newline
+* 
+\emph on
+CPULOAD
+\emph default
+
+\newline
+* 
+\emph on
+UPTIME
+\emph default
+
+\newline
+* 
+\emph on
+USEDDISKSPACE
+\emph default
+
+\newline
+* 
+\emph on
+MEMUSE
+\emph default
+
+\newline
+* 
+\emph on
+SERVICESTATE
+\emph default
+
+\newline
+* 
+\emph on
+PROCSTATE
+\emph default
+
+\newline
+* 
+\emph on
+COUNTER
+\emph default
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+NSCAAgent.dll
+\series default
+
+\newline
+This module periodically runs a set of check_commands and submits the results
+ to an NSCA server.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+SysTray.dll
+\series default
+
+\newline
+A simple module to show an icon in the tray when the service is running
+ this module does not export any check commands.
+ NOTICE This is not used on windows vista and above! 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+RemoteConfiguration
+\series default
+
+\newline
+DEPRECATED Don't use the module unless you have a reason :)
+\end_layout
+
+\begin_layout Subsection
+Elenco dei moduli per plugins
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CheckDisk.dll
+\series default
+
+\newline
+The CheckDisk module has various disk and file related checks.
+ You can either check disk drive and volume sizes as well as files and directori
+es.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+CheckFileSize
+\emph default
+, Check the size of one or more files or directories.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckDriveSize
+\emph default
+, Check the size of one or more Drives
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckFile
+\emph default
+, DEPRECATED Check various aspects on one or more files or directories.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckFile2
+\emph default
+, Check various aspects on (one or) more files or directories.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+CheckEventLog.dll
+\series default
+
+\newline
+The CheckEventLog module checks for problems reported to the windows event
+ log.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+CheckEventLog
+\emph default
+, Check to find errors in the event log.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+CheckExternalScripts.dll
+\series default
+
+\newline
+This module allows you to check external scripts and/or programs.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CheckHelpers.dll
+\series default
+
+\newline
+The CheckHelpers module has various helper function to alter other checks
+ in various ways.
+ This module does not check anything by it self.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+CheckAlwaysOK
+\emph default
+, Alter the return code of another check to always return OK.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckAlwaysCRITICAL
+\emph default
+, Alter the return code of another check to always return CRITICAL.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckAlwaysWARNING
+\emph default
+, Alter the return code of another check to always return WARNING.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckMultiple
+\emph default
+, Runs multiple checks and returns the worst state.
+ Useful for minimizing network traffic and command definitions.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+CheckSystem.dll
+\series default
+
+\newline
+A module to check various system related things.
+ A list of the modules and there potential use is listed below here.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+CheckCPU
+\emph default
+, Check CPU load
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckUpTime
+\emph default
+, Check system uptime
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckServiceState
+\emph default
+, Check state of a service
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckProcState
+\emph default
+, Check state of a process
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckMem
+\emph default
+, Check memory usage (page) 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+CheckTaskSched.dll
+\series default
+
+\newline
+The CheckTaskSched module check check various aspects of the task scheduler.
+ Feel free to request checks that you need.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+CheckTaskSched
+\emph default
+, Check if tasks are working.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\series bold
+CheckWMI.dll
+\series default
+
+\newline
+The CheckWMI module has various WMI related functions used to query and
+ check the WMI (Windows Managment Instrumenation).
+ Feel free to request checks that you need.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\emph on
+CheckWMI
+\emph default
+, Check large resultsets from (for instance are there more than 5-rows matching
+ criteria X, ie.
+ more than 5 Internet Explorer processes witch uses more then 123Mb memory).
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+CheckWMIValue
+\emph default
+, Check the result of a query (ie.
+ are the current memory utilization over X)
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Definizioni di contatti, periodi di tempo, informazioni estese
+\end_layout
+
+\begin_layout Standard
+Nei seguenti file vanno riportati le definizioni contatti, periodi di tempo,
+ informazioni estese.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+1C-contatti.cfg
+\family default
+\color inherit
+ In questo file vanno inserite le definizioni dei contatti e dei gruppi
+ di contatti.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+1P-periodi_tempo.cfg 
+\family default
+\color inherit
+In questo file vanno inserite le definizioni dei periodi di tempo.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\color black
+1E-informazioni_estese.cfg 
+\family default
+\color inherit
+In questo file vanno inserite le informazioni estese.
+\end_layout
+
+\begin_layout Section
+Aggiornamento della configurazione di Nagios
+\end_layout
+
+\begin_layout Standard
+Tutte le configurazioni sono conservate nel sistema di versioning 
+\emph on
+SVN
+\emph default
+, il cui repository è situato all'URL 
+\family typewriter
+\color black
+https://svn.dapced.rm/Monitoring/trunk
+\family default
+\color inherit
+.
+\end_layout
+
+\begin_layout Standard
+Per aggiornare la configurazione di Nagios, ad esempio per inserire/rimuovere
+ un host/servizio, occorre effettuare le operazioni di seguito riportate.
+\end_layout
+
+\begin_layout Enumerate
+Prelevare (checkout) una copia locale con un 
+\emph on
+client
+\emph default
+ 
+\emph on
+SVN
+\emph default
+.
+ Se si ha già una copia locale, non è necessario prelevarla ma effettuarne
+ l'aggiornamento (update) a HEAD.
+\end_layout
+
+\begin_layout Enumerate
+Effettuare le proprie modifiche alla configurazione.
+\end_layout
+
+\begin_layout Enumerate
+Per effettuare dei test, supponendo che 
+\family typewriter
+\color black
+/path/to/Monitoring
+\family default
+\color inherit
+ sia la directory della copia locale della configurazione, spostarsi nella
+ sottodirectory 
+\family typewriter
+\color black
+/path/to/Monitoring/bin
+\family default
+\color inherit
+ ed eseguire il comando
+\newline
+
+\family typewriter
+\color black
+$ ./aggiorna-test.sh
+\family default
+\color inherit
+ 
+\end_layout
+
+\begin_layout Enumerate
+Quando la configurazione è definitiva, 
+\emph on
+depositare
+\emph default
+ (commit) la nuova configurazione (cioè la copia locale aggiornata) nel
+ repository 
+\emph on
+SVN
+\emph default
+ (tramite il client 
+\emph on
+SVN).
+\end_layout
+
+\begin_layout Enumerate
+Per aggiornare il server 
+\emph on
+Nagios
+\emph default
+ con la configurazione definitiva, supponendo che 
+\family typewriter
+\color black
+/path/to/Monitoring
+\family default
+\color inherit
+ sia la directory della copia locale della configurazione, spostarsi nella
+ sottodirectory 
+\family typewriter
+\color black
+/path/to/Monitoring/bin
+\family default
+\color inherit
+ ed eseguire il comando
+\newline
+
+\family typewriter
+\color black
+$ ./aggiorna-configurazione.sh
+\end_layout
+
+\begin_layout Section
+Gestione utenze (web e mail)
+\end_layout
+
+\begin_layout Standard
+Ogni servizio/host permette di definire utenze destinate a ricevere le notifiche
+ del server 
+\emph on
+Nagios
+\emph default
+ e al controllo attuale del loro stato, tramite l'interfaccia web.
+\end_layout
+
+\begin_layout Standard
+Di seguito la procedura per definire le utenze e configurare le postazioni
+ a ricevere/monitorare i servizi/host.
+\end_layout
+
+\begin_layout Subsection
+Configurazione utenze
+\end_layout
+
+\begin_layout Standard
+Per ogni persona intenzionata a recevere notifiche e/o monitorare determinati
+ servizi di cui sono responsabili, occorre effettuare le seguenti operazioni:
+\end_layout
+
+\begin_layout Itemize
+creare una utenza di s.o.
+ (con password) sul server 
+\emph on
+Nagios
+\emph default
+, ad ex.
+ 
+\emph on
+arossi
+\end_layout
+
+\begin_layout Itemize
+creare la definizione di un 
+\emph on
+contatto
+\emph default
+ (file 
+\family typewriter
+\color black
+1C-contatti.cfg
+\family default
+\color inherit
+) avendo cura di specificare 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+il
+\family typewriter
+ contact_name
+\family default
+ come l'utente di s.o.
+ (ad ex.
+
+\emph on
+ arossi
+\emph default
+)
+\end_layout
+
+\begin_layout Itemize
+l'
+\family typewriter
+ alias
+\family default
+ come descrizione dell'utente (ad ex.
+ 
+\emph on
+Antonio Rossi
+\emph default
+)
+\end_layout
+
+\begin_layout Itemize
+i 
+\family typewriter
+service_notification_period
+\family default
+ e 
+\family typewriter
+host_notification_period
+\family default
+ pari ai periodi durante i quali l'utente desidera ricevere le notifiche
+ (scegliere un periodo di tempo dal file 
+\family typewriter
+\color black
+1P-periodi_tempo.cfg
+\family default
+\color inherit
+; qualora nessuno soddisfi le esigenze crearne uno ex novo)
+\end_layout
+
+\begin_layout Itemize
+l'
+\family typewriter
+email
+\family default
+ con dominio 
+\emph on
+dapced.rm
+\emph default
+ (cioè l'indirizzo di posta è del tipo ad ex.
+
+\emph on
+ arossi
+\emph default
+@
+\emph on
+dapced.rm
+\emph default
+).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+sul server Nagios eseguire 
+\family typewriter
+
+\newline
+# htpasswd /etc/nagios3/htpasswd.users arossi
+\begin_inset Foot
+status open
+
+\begin_layout Standard
+Inserire la password come richiesto dal prompt
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

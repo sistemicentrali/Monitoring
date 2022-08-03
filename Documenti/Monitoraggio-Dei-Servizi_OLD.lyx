@@ -1,0 +1,2710 @@
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
+\begin_document
+\begin_header
+\textclass book
+\begin_preamble
+% added by lyx2lyx for converted index entries
+\@ifundefined{textmu}
+ {\usepackage{textcomp}}{}
+% added by lyx2lyx for converted entries
+\@ifundefined{textmu}
+ {\usepackage{textcomp}}{}
+\end_preamble
+\language italian
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\paperfontsize default
+\spacing single
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author ""
+\author ""
+\end_header
+
+\begin_body
+
+\begin_layout Title
+
+\series bold
+\color blue
+Progetto di Monitoraggio dei Servizi
+\newline
+
+Prima implementazione
+\end_layout
+
+\begin_layout Author
+
+\color blue
+Dr.
+ Ing.
+
+\series bold
+ Marco Paone
+\newline
+
+
+\series default
+\size scriptsize
+Dr.
+ Ing.
+ 
+\series bold
+Giuseppe Masi
+\end_layout
+
+\begin_layout Chapter
+Introduzione
+\end_layout
+
+\begin_layout Standard
+Dai numerosi sondaggi e ricerche che compaiono su internet si desume che
+ si sta andando sempre più verso l'integrazione di servizi e sistemi ogni
+ giorno più complessi.
+ Anche le piccole aziende si stanno dotando di server aziendali dove vengono
+ installate applicazioni e servizi per i clienti e i propri dipendenti.
+ 
+\end_layout
+
+\begin_layout Standard
+Spesso però si pensa solo all'implementazione e non al controllo degli stessi
+ server che fanno il core bussiness dell'azienda.
+ Le capacità tecniche per fare le integrazioni ci sono ma quello che manca
+ a mio avviso è la cultura dirigenziale per poter proporre o pensare di
+ implementare oltre ai servizi anche un buon monitoraggio degli stessi.
+ 
+\end_layout
+
+\begin_layout Standard
+Un altro problema che riscontro è la paura da parte dei commerciali delle
+ diverse aziende d'informatica, con cui sono venuto a contatto, di proporre
+ o vendere soluzioni basate su prodotti OpenSource perchè non c'è dietro
+ una società o struttura tecnica di supporto al prodotto.
+ Le aziende si rivolgono alle società che vendono software senza pensare
+ che non esistono solo dei software a pagamento che si occupano di fare
+ monitoraggio dei servizi, ma ne esistono di ottimi anche Open-Source.
+ 
+\end_layout
+
+\begin_layout Standard
+In questa progetto implementeremo un sistema di monitoraggio attivo/passivo
+ utilizzando Nagios ( 
+\begin_inset LatexCommand url
+target "http://www.nagios.org"
+
+\end_inset
+
+), un programma OpenSource per monitorare servizi e server in una realtà
+ distribuita.
+ 
+\end_layout
+
+\begin_layout Section
+Cos'è Nagios
+\end_layout
+
+\begin_layout Standard
+Secondo Wikipedia (http://en.wikipedia.org/wiki/System_Monitoring) Nagios
+ è uno strumento per il monitoraggio di un sistema.
+ Ciò significa che controlla costantemente lo stato di macchine e servizi
+ vari su quelle macchine.
+ Lo scopo principale del monitoraggio di sistema è quello di individuare
+ e segnalare un qualsiasi sistema che non funziona correttamente, non appena
+ possibile, in modo che, siate a conoscenza del problema prima che l'utente
+ si imbatta in esso.
+ 
+\end_layout
+
+\begin_layout Standard
+Nagios non esegue alcun servizio o controlli per proprio conto.
+ Esso utilizza plugin per effettuare i controlli.
+ Questo lo rende una soluzione molto modulare e flessibile per l'esecuzione
+ e il controllo della macchina e dei servizi.
+ Gli oggetti controllati da Nagios sono divisi in due categorie: gli host
+ e servizi.
+ Gli Host sono macchine fisiche (server, router, workstation, stampanti
+ e così via), mentre i servizi sono funzionalità particolari, per esempio,
+ un server web (un processo httpd su una macchina) può essere definito come
+ un servizio che deve essere monitorato.
+ Ogni servizio è associato con un host su cui è in esecuzione.
+ Inoltre, entrambe le macchine e servizi possono essere raggruppati in gruppi
+ di host e di servizi, rispettivamente.
+ Ci occuperemo nel dettaglio di ciascuno di questi tipi di oggetti nella
+ sezione successiva.
+ Nagios ha due principali punti di forza quando si tratta di scansione -
+ prima di tutto, invece di valori di monitoraggio, utilizza solo quattro
+ stati per descrivere lo status: 
+\series bold
+OK
+\series default
+, 
+\series bold
+WARNING
+\series default
+, 
+\series bold
+CRITICAL
+\series default
+, e 
+\series bold
+UNKNOWN
+\series default
+.
+ L'approccio di fornire solo questi stati astratti consente agli amministratori
+ di sistema di ignorare i valori di monitoraggio e di decidere solo quali
+ siano i limiti di allerta / critici (warning/critical).
+ Avere un limite stretto da tenere d'occhio è molto meglio che rilevare
+ un problema indipendentemente dal fatto che si trasformi da un limite di
+ allerta a uno critico in 15 minuti o in una settimana.
+ Questo è esattamente ciò che fa Nagios.
+ Se state controllando un valore numerico come ad esempio la quantità di
+ spazio su disco e l'utilizzo della CPU, è possibile definire soglie per
+ le quali i valori sono considerati corretti, un allerta o un guasto.
+ Ad esempio, gli amministratori di sistema tendono ad ignorare le cose quali
+ una lenta diminuizione dello spazio disco.
+ Le persone spesso ignorano questo fino a quando un processo critico esaurisce
+ lo spazio su disco.
+ Un altro vantaggio è che un report mostra il numero di servizi attivi e
+ funzionanti in uno dei due stati sia 'warning' che 'critical'.
+ Tale report offre una buona panoramica dello stato dell'infrastruttura.
+ Nagios offre anche report simili per i gruppi di hosts e i gruppi di servizi,
+ ad esempio quando un servizio critico o database server è inattivo.
+ Tale report può anche aiutare astabilire una priorità su ciò che deve essere
+ affrontato prima, e i problemi che possono essere gestiti dopo.
+ Nagios effettua tutti i controlli utilizzando i plugin.
+ Questi sono componenti esterni ai quali Nagios passa le informazioni su
+ ciò che dovrebbe essere controllato e su quali sono i limiti di 'warning'
+ e quelli 'critical'.
+ I plugin sono responsabili dei controlli e delle analisi dei risultati.
+ L'output di tali controlli è uno stato (OK, WARNING, CRITICAL, e UNKNOWN)
+ e del testo aggiuntivo che fornisce informazioni sul servizio in dettaglio.
+ Questo testo è rivolto principalmente agli amministratori di sistema per
+ essere in grado di leggere uno stato dettagliato di un servizio.
+ Nagios non solo offre un sistema centrale di monitoraggio, ma offre anche
+ una serie di plug-in standard in un pacchetto separato (vedi http://nagiosplugi
+ns.org/ per maggiori dettagli).
+ Questi plug-in permettono i controlli di quasi tutti i servizi che la vostra
+ azienda possa avere.
+ Fare riferimento al capitolo 4, Panoramica di Nagios Plugin, per informazioni
+ dettagliate sui plugin che sono stati sviluppati insieme a Nagios.
+ Se avete bisogno di eseguire un controllo specifico (per esempio, per connetter
+si a un servizio Web e invocare i metodi), è molto facile scrivere un plugin
+ personalizzato.
+ E non è tutto: possono essere scritti in qualsiasi linguaggio di programmazione
+, e richiedono meno di un quarto del tempo necessario per scrivere un comando
+ completo di controllo! Il Capitolo 11 (Estensione di Nagios) parla di questo
+ in modo più dettagliato.
+ 
+\end_layout
+
+\begin_layout Subsection
+Vantaggi del monitoraggio delle risorse
+\end_layout
+
+\begin_layout Standard
+Ci sono molte ragioni per cui è necessario assicurarsi che tutte le risorse
+ lavorino come previsto.
+ Se non siete ancora convinti, dopo aver letto l'introduzione a questo capitolo,
+ qui ci sono alcuni punti principali per cui è importante monitorare la
+ vostra infrastruttura.
+ 
+\end_layout
+
+\begin_layout Standard
+Il vantaggio principale è il miglioramento della qualità.
+ Se il vostro personale IT può rilevare errori più rapidamente, saranno
+ anche in grado di rispondere a questi molto più velocemente.
+ A volte, ci vogliono ore o giorni per avere il primo rapporto su un guasto,
+ anche se molti utenti possono imbattersi in errori.
+ Nagios farà in modo che se qualcosa non funziona, tu lo sai subito.
+ E 'anche possibile che Nagios esegua azioni di recupero automatico.
+ Questo viene fatto usando i gestori di eventi.
+ Questi sono comandi che vengono eseguiti dopo che lo stato di un host o
+ di un servizio è cambiato - in questo modo, quando un router primario è
+ inattivo, Nagios passerà ad una soluzione di backup fino a quando non è
+ risolto il problema.
+ Un caso tipico potrebbe essere quello di avviare una connessione dial-up
+ come ripiego, nel caso di una VPN inattiva.
+ 
+\end_layout
+
+\begin_layout Standard
+Un altro vantaggio è la migliore determinazione di un problema.
+ Molto spesso, ciò che gli utenti indicano come un guasto è ben lungi dall'esser
+e la causa principale del problema - un sistema di posta elettronica, a
+ causa di un servizio LDAP non funziona correttamente.
+ Se si definiscono correttamente le dipendenze tra gli host, Nagios farà
+ notare che il server POP3 e-mail viene considerato non funzionante perché
+ il servizio LDAP, che vi dipende, ha un problema.
+ Nagios avvia il controllo del server e-mail non appena il problema con
+ LDAP è stato risolto.
+ Nagios è anche molto flessibile quando si tratta di notificare alle persone
+ ciò che non sta funzionando correttamente.
+ È possibile impostarlo fino a inviare e-mail a persone diverse a seconda
+ di cosa non sta funzionando correttamente.
+ Nella maggior parte dei casi, la vostra azienda ha un grande team IT o
+ più squadre.
+ Di solito si indicano alcune persone a gestire i server, e gli altri a
+ gestire switch di rete / router / modem.
+ È anche possibile usare l'interfaccia web di Nagios per la gestione di
+ chi sta lavorando su quel problema.
+ È inoltre possibile configurare come Nagios invia notifiche via e-mail,
+ cercapersone su Jabber, MSN, oppure usare dei tuoi propri script.
+ 
+\end_layout
+
+\begin_layout Standard
+Il monitoraggio delle risorse non solo è utile per individuare i problemi,
+ ma si può anche aiutarti a prevenirli.
+ Nagios gestisce le situazioni di 'warning' e 'critical' in modo diverso.
+ Ciò significa che è possibile riconoscere le situazioni potenzialmente
+ problematiche in fretta.
+ Ad esempio, se il vostro spazio su disco su un server di posta elettronica
+ si sta esaurendo, è meglio essere a conoscenza di questa situazione prima
+ che diventi un punto critico.
+ 
+\end_layout
+
+\begin_layout Standard
+Il controllo può anche essere impostato su più macchine in varie sedi, che
+ possono comunicare tutti i loro risultati a un server Nagios centrale.
+ In questo modo, le informazioni su tutti gli host e i servizi nel sistema
+ possono essere acceduti da una singola macchina.
+ Questo dà un quadro più completo della vostra infrastruttura IT, e consente
+ anche test di elementi più complessi come ad esempio i firewall.
+ 
+\end_layout
+
+\begin_layout Subsection
+Caratteristiche principali
+\end_layout
+
+\begin_layout Standard
+Il principale punto di forza Nagios è la sua flessibilità - può essere configura
+to per monitorare l'infrastruttura IT nel modo desiderato.
+ Esso ha anche un meccanismo automatico di far fronte ai problemi, e un
+ potente sistema di notifica.
+ Tutto questo si basa su un sistema chiaro di definizione dell'oggetto e
+ su alcuni tipi di oggetti: 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Comandi
+\series default
+ sono le definizioni di come Nagios dovrebbe eseguire particolari tipi di
+ verifica, che sono un livello di astrazione superiore dei plugin effettivi
+ che consentono di raggruppare tipi di operazioni simili.
+ 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Periodi
+\series default
+ 
+\series bold
+di
+\series default
+ 
+\series bold
+tempo
+\series default
+ sono la data e l'ora all'interno dei quali l'operazione dovrebbe o non
+ dovrebbe essere eseguita, ad esempio: da Lunedi a Venerdì dalle ore 09:00
+ alle 17:00.
+ 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Contatti
+\series default
+ e 
+\series bold
+gruppi
+\series default
+ 
+\series bold
+di
+\series default
+ 
+\series bold
+contatto
+\series default
+ sono persone a cui devono essere notificati, insieme a informazioni su
+ come e quando devono essere contattati.
+ I contatti possono essere raggruppati e un contatto unico può essere membro
+ di più di un gruppo.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gli 
+\series bold
+Host
+\series default
+ sono macchine fisiche, nonché le informazioni su chi deve essere contattato,
+ come i controlli devono essere eseguiti, e quando.
+ Gli host possono essere raggruppati, in gruppi di host di cui ogni host
+ può essere un membro di più di un gruppo di host.
+ 
+\end_layout
+
+\begin_layout Enumerate
+I 
+\series bold
+Servizi
+\series default
+ sono diverse funzionalità o le risorse per monitorare un host specifico,
+ insieme con le informazioni su chi deve essere contattato, come i controlli
+ devono essere effettuati, e quando.
+ I servizi possono essere raggruppati in gruppi di servizi, ogni servizio
+ può essere un membro di più di un gruppo di servizi.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Gli 
+\series bold
+Host
+\series default
+ e 
+\series bold
+Service
+\series default
+ 
+\series bold
+escalations
+\series default
+ definiscono il periodo di tempo dopo il quale altre persone devono essere
+ avvertite di alcuni eventi - ad esempio un server importante inattivo per
+ più di 4 ore dovrebbe mettere in allerta i responsabili IT in modo da iniziare
+ a monitorare la questione.
+ Queste persone sono definite in aggiunta alle normali comunicazioni configurate
+ negli oggetti host e servizio.
+ 
+\end_layout
+
+\begin_layout Standard
+Un vantaggio importante che si otterrà utilizzando Nagios è un sistema maturo
+ di dipendenze.
+ Per qualsiasi amministratore, è evidente che se il router è inattivo, l'accesso
+ a tutte le macchine tramite esso fallirà.
+ Alcuni sistemi non ne tengono conto e, in tal caso, si potrebbe ottenere
+ una lista di macchine e servizi non funzionanti.
+ Nagios consente di definire le dipendenze tra gli host per avere la topologia
+ di rete effettiva.
+ Per esempio, se uno switch che si connette a un router è inattivo, Nagios
+ non farà verifiche sul router o sulle macchine che sono a carico del router.
+ Questo è illustrato nel seguente esempio: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+    filename fig1.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+È inoltre possibile definire un servizio particolare, che dipende da un
+ altro servizio, sia sullo stesso host o su un altro host.
+ Se uno dei servizi è giù, un check per un servizio che dipende da esso
+ non viene eseguito.
+ Ad esempio, perchè l'applicazione intranet aziendale funzioni correttamente,
+ devono essere in esecuzione sia un server Web di base che un server di
+ database.
+ Quindi, se un servizio di database non funziona correttamente, Nagios non
+ effettuerà controlli sulla vostra applicazione.
+ Il server di database potrebbe essere sullo stesso host o su un host diverso.
+ In tal caso, se la macchina è giù o non accessibile, le notifiche per tutti
+ i servizi dipendenti dal servizio di database non saranno inviati.
+ 
+\end_layout
+
+\begin_layout Standard
+Nagios offre un sistema coerente di definizioni delle macro.
+ Queste sono le variabili che possono essere messe in tutte le definizioni
+ degli oggetti, a seconda del contesto.
+ Esse possono essere messe dentro i comandi, e a seconda dell'host, del
+ servizio, e di molti altri parametri, vengono sostituiti di conseguenza
+ i valori.
+ Ad esempio, in una definizione di comando è possibile utilizzare l'indirizzo
+ IP della macchina che è in corso di verifica in tutte le prove a distanza.
+ Questo rende possibile inserire le informazioni, come lo status attuale
+ e precedente di un servizio, in una e-mail di notifica.
+ Nagios 3 offre anche varie estensioni per le definizioni di macro, il che
+ lo rende un meccanismo ancora più potente.
+ Questo è descritto in dettaglio nell'ultima sezione di questo capitolo.
+ 
+\end_layout
+
+\begin_layout Standard
+Nagios offre anche meccanismi di programmazione dei tempi di fermo macchina
+ previsti.
+ È possibile pianificare che un particolare host o un servizio dovrebbe
+ essere indisponibile.
+ Ciò impedirà a Nagios di notificare alle persone per quanto riguarda i
+ problemi connessi a questi oggetti.
+ Nagios può anche notificare automaticamente la gente dei tempi di fermo
+ programmato.
+ Questo è principalmente usato quando deve essere effettuata la manutenzione
+ della infrastruttura IT, e il server e / o i servizi che forniscono non
+ sono disponibili per un lungo tempo.
+ Ciò permette la creazione di un processo integrato di pianificazione tempi
+ di fermo macchina che gestirà inoltre l'informazione degli utenti.
+ 
+\end_layout
+
+\begin_layout Subsection
+Stati “Hard” e “Soft”
+\end_layout
+
+\begin_layout Standard
+Nagios opera verificando se un host o un servizio sta funzionando correttamente
+ e sta mantenendo il suo stato.
+ Perché lo stato di un servizio è solo uno dei quattro valori possibili,
+ è fondamentale che essa rifletta esattamente quello che è lo stato attuale.
+ Al fine di evitare problemi di individuare errori casuali e temporanei,
+ Nagios utilizza stati soft e hard per descrivere quello che è l'attuale
+ stato di un host o servizio.
+ Immaginiamo che un amministratore sta riavviando un server web e questa
+ operazione rende il collegamento alle pagine web non disponibile per cinque
+ secondi.
+ Per quanto, di solito, il riavvio viene eseguito di notte per ridurre il
+ numero di utenti interessati, questo è un periodo di tempo accettabile.
+ Tuttavia, un problema può verificarsi quando Nagios tenta di connettersi
+ al server e si accorge che in realtà è inattivo.
+ Se si basasse solo su un singolo risultato, sarebbe Nagios ad attivare
+ un allarme che il web server è inattivo.
+ Sarebbe effettivamente installato e funzionante ancora in pochi secondi,
+ ma ci vorranno un paio di minuti per Nagios per scoprirlo.
+ 
+\end_layout
+
+\begin_layout Standard
+Per gestire le situazioni in cui un servizio viene interrotto per un tempo
+ molto breve, o il test è riuscito temporaneamente, sono stati introdotti
+ gli Stati 'soft'.
+ Quando lo stato di un controllo è 'unknown, o è diverso da quello precedente,
+ Nagios ritesta l'host o il servizio più volte per assicurarsi che il cambiament
+o è persistente.
+ Il numero di controlli è specificato nella configurazione dell'host o del
+ servizio.
+ Nagios presuppone che il nuovo risultato è in uno stato 'soft'.
+ Dopo che test supplementari hanno verificato che il nuovo stato è permanente,
+ esso è considerato uno stato 'hard'.
+ 
+\end_layout
+
+\begin_layout Standard
+Ogni definizione di host e di servizio specifica il numero di tentativi
+ da eseguire prima di poter ipotizzare che il cambiamento è permanente.
+ Ciò consente una maggiore flessibilità per quanti fallimenti devono essere
+ trattati come un problema reale, invece di uno temporaneo.
+ Impostando il numero di controlli a uno farà si che tutte le modifiche
+ devono essere trattate come 'hard' all'istante.
+ Il seguente è un esempio dei cambiamenti di stato 'soft' e 'hard', supponendo
+ che il numero dei controlli da effettuare è impostato a tre: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+    filename fig2.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Questa funzione consente di ignorare le interruzioni brevi di un servizio.
+ E 'anche molto utile per eseguire i controlli che periodicamente possono
+ fallire anche se tutto funziona correttamente.
+ Dispositivi di controllo su SNMP è anche un esempio in cui un unico controllo
+ potrebbe non riuscire, ma il controllo alla fine riuscirà durante il secondo
+ o terzo controllo.
+ 
+\end_layout
+
+\begin_layout Section
+Architettura del Sistema
+\end_layout
+
+\begin_layout Standard
+L'architettura del sistema prevede l'utilizzo di un server (
+\emph on
+monitor-server
+\emph default
+) con le seguenti caratteristiche:
+\end_layout
+
+\begin_layout Itemize
+Server 
+\end_layout
+
+\begin_layout Itemize
+sistema operativo Ubuntu
+\end_layout
+
+\begin_layout Chapter
+Istallazione del software sul monitor-server
+\end_layout
+
+\begin_layout Section
+Istallazione del sistema operativo 
+\end_layout
+
+\begin_layout Standard
+Il sistema operativo istallato sui nodi del cluster è 
+\series bold
+Ubuntu Jaunty
+\end_layout
+
+\begin_layout Standard
+La procedura di istallazione è effettuata in modalità standard.
+\end_layout
+
+\begin_layout Standard
+Le opzioni e i parametri di configurazione sono riportati nella seguente
+ tabella.
+ 
+\end_layout
+
+\begin_layout Standard
+I parametri e le opzioni non specificati, prendono i valori predefiniti.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features>
+<column alignment="center" valignment="middle" width="0" leftline="true" rightline="true">
+<column alignment="center" valignment="middle" width="0" leftline="true" rightline="true">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Parametro/Opzione
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+Valore
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Lingua
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+Italiano
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="false" bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Tastiera
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+come appropriato
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="false" bottomline="true">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Disco Locale
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="3">
+<features>
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="middle" width="0">
+<column alignment="center" valignment="middle" width="0">
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+partizione
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+dimensione
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+mount
+\emph default
+ 
+\emph on
+point
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+37 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="true">
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+8 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+swap
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="false" bottomline="false">
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+122 MB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/boot
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row topline="true" bottomline="false">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/dev/sda5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+358 GB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+/opt
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Indirizzo IP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+10.0.255.148
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Hostname
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\series bold
+monitor-server
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Gateway
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+10.0.255.254
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Primary DNS
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+10.0.255.148
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\emph on
+Root Password
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\family typewriter
+admin01
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Istallazione di NAGIOS 
+\end_layout
+
+\begin_layout Standard
+L'istallazione del software di monitoraggio NAGIOS, è consistito nell'istallare
+ il pacchetto 
+\family typewriter
+nagios3
+\family default
+ (e le relative dipendenze).
+\end_layout
+
+\begin_layout Chapter
+Configurazione di NAGIOS
+\end_layout
+
+\begin_layout Standard
+Di seguito riportiamo le modifiche rispetto alla configurazione di istallazione
+ predefinita.
+\end_layout
+
+\begin_layout Section
+File di configurazione principale
+\begin_inset LatexCommand index
+name "File di configurazione principale"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Il file di configurazione principale di nagios (
+\family typewriter
+/etc/nagios.cfg
+\family default
+) viene caricato allo startup di nagios.
+\end_layout
+
+\begin_layout Standard
+La sintassi è semplice: una linea che comincia con 
+\family typewriter
+#
+\family default
+ indica un commento e tutte le linee della forma
+\family typewriter
+ <parametro>=<valore>
+\family default
+ imposteranno il valore del parametro.
+ In taluni casi, un valore potrebbe essere ripetuto.
+\end_layout
+
+\begin_layout Standard
+Il file di configurazione principale deve definire il file di log da utilizzare,
+ e questo deve essere specificato come prima opzione nel file.
+ Esso configura anche vari parametri di Nagios relativi al suo comportamento
+ e alle performance.
+\end_layout
+
+\begin_layout Standard
+Di seguito riportiamo un elenco delle opzioni più comuni:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+log_file
+\series default
+ Specifica il file di log da utilizzare 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+cfg_file
+\series default
+ Specifica il file di configurazione che contiene le definizioni degli oggetti;
+ può essre specificato più volte
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+cfg_dir
+\series default
+ Specifica la directory di configurazione che contiente tutti i file contenenti
+ le definizioni degli oggetti;può essre specificato più volte
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+resource_file
+\series default
+ Specifica il file contenente le definizioni di macro addizionali
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+temp_file
+\series default
+ Specifica il path del file temporaneo utilizzato per contenere i dati temporane
+i
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+temp_path
+\series default
+ Specifica la directory in cui Nagios può creare i file temporanei
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+lock_file
+\series default
+ Specifica il path del file utilizzato per la sincronizzazione
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+status_file
+\series default
+ Specifica il path del file che contiene lo stato corrente di tutti gli
+ hosts e servizi
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+status_update_interval
+\series default
+ Specifica quanto spesso (in secondi) lo 
+\series bold
+status_file
+\series default
+ deve essere aggiornato
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+nagios_user
+\series default
+ Specifica l'utente (di sistema operativo) con cui funziona il demone 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+nagios_group
+\series default
+ Specifica il gruppo (di sistema operativo) con cui funziona il demone
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+command_file
+\series default
+ Specifica il path del file conenente il comando esterno utilizzato dagli
+ altri processi per controllare il demone
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+use_syslog
+\series default
+ Specifica se Nagios debba inviare i messaggi di log al sottosistema 
+\series bold
+\emph on
+syslog
+\series default
+\emph default
+ oltre che nel 
+\series bold
+log_file
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+state_retention_file
+\series default
+ Specifica il path del file contenente le informazioni di stato salvate
+ nello shutdown (e ripristinate al reboot successivo)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+retention_update_interval 
+\series default
+Specifica quanto spesso (in secondi) lo 
+\series bold
+state_retention_file
+\series default
+ debba essere aggiornato
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+service_check_timeout
+\series default
+ Specifica l'intervallo di tempo massimo (in secondi) oltre il quale non
+ verrà eseguito più alcun controllo su di un servizio in stato di guasto
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+host_check_timeout
+\series default
+ Specifica l'intervallo di tempo massimo (in secondi) oltre il quale non
+ verrà eseguito più alcun controllo su di un host in stato di guasto
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+event_handler_timeout
+\series default
+ Specifica l'intervallo di tempo massimo (in secondi) oltre il quale l'esecuzion
+e di un gestore d'evento viene interrotta
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+notification_timeout
+\series default
+ Specifica l'intervallo di tempo massimo (in secondi) oltre il quale l'esecuzion
+e di un comando di notifica viene interrotta 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+enable_embedded_perl
+\series default
+ Specifica se l'interprete Perl incorporato debba essere usato
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+use_embedded_perl_implicitily
+\series default
+ Se l'interprete Perl incorporato è supportato ed abilitato, specifica se
+ tutti i plugin Perl debbano essere letti con l'interprete incorporato,
+ tranne che specificato diversamente dal plugin stesso
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+enable_environment_macros
+\series default
+ Specifica se Nagios debba passare tutte le macro ai plugin anche come variabili
+ d'ambiente
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+interval_length
+\series default
+ Specifica il numero di secondi che compone un "
+\series bold
+intervallo unità
+\series default
+"; viene raccomandato di non modificare questa opzione, poichè potrebbe
+ causare un comportamento indesiderato
+\end_layout
+
+\begin_layout Standard
+Di seguito descriviamo alcune importanti opzioni.
+\end_layout
+
+\begin_layout Standard
+L'opzione 
+\series bold
+resource_file
+\series default
+ definisce il file in cui inserire tutte le variabili utente.
+ Questo file può essere utilizzato per conservare informazioni addizionali
+ che possono essere accedute in tutte le definitioni degli oggetti.
+ Questo file di solito contiene dati sensibili in quanto può essere utilizzato
+ esclusivamente nelle definizioni di oggetto, e non è possibile leggere
+ queste variabili dall'interfaccia web.
+ Ciò rende possibile nascondere le password dei vari servizi sensibili agli
+ amministratori che non hanno i privilegi adeguati.
+ Ci possono essere fino a 32 macro, chiamate 
+\emph on
+$USER1$
+\emph default
+, 
+\emph on
+$USER2$
+\emph default
+ ...
+ 
+\emph on
+$USER32$
+\emph default
+.
+ La definizione macro 
+\emph on
+$USER1$
+\emph default
+ definisce il path ai plugin di Nagios ed è comunemente utilizzata nelle
+ definizioni dei comandi di controllo.
+\end_layout
+
+\begin_layout Standard
+Le opzioni 
+\series bold
+cfg_file
+\series default
+ e 
+\series bold
+cfg_dir
+\series default
+ sono utilizzate per specificare i file che contengono le definizioni di
+ oggetto.
+ La prima opzione specifica un singolo file da leggere mentre la seconda
+ specifica la directory in cui porre tutti i file contenenti le definizioni.
+ Ogni file può contenere differenti tipi di oggetti.
+ Al fine di creare una configurazione facilmente manutenibile, una delle
+ cose principali da stabilire è come le definizioni degli oggetti debbano
+ essere conservati.
+\end_layout
+
+\begin_layout Standard
+La scelta effettuata in questo progetto è quella di utilizzare una 
+\series bold
+struttura a directory
+\series default
+, in quanto un buona separazione della configurazione in varie directory
+ rende molto più facile la gestione della medesima.
+\end_layout
+
+\begin_layout Standard
+Verrà utilizzata una directory separata per ogni tipo di oggetto ed oggetti
+ simili verranno raggruppati all'interno di singoli file (che avranno un
+ nome di tipo 
+\emph on
+<TIPODIOGGETTO>.cfg
+\emph default
+).
+ 
+\end_layout
+
+\begin_layout Standard
+In particolare si utilizzano le seguenti opzioni per specificare le directory
+ (il cui scopo è specificato dal nome):
+\end_layout
+
+\begin_layout LyX-Code
+cfg_dir=/etc/nagios3/commands 
+\end_layout
+
+\begin_layout LyX-Code
+cfg_dir=/etc/nagios3/timeperiods 
+\end_layout
+
+\begin_layout LyX-Code
+cfg_dir=/etc/nagios3/contacts 
+\end_layout
+
+\begin_layout LyX-Code
+cfg_dir=/etc/nagios3/hosts 
+\end_layout
+
+\begin_layout LyX-Code
+cfg_dir=/etc/nagios3/services
+\end_layout
+
+\begin_layout Standard
+Inoltre, rispetto alla configurazione predefinita, occorre assicurarsi che
+ le seguenti opzioni abbiano i valori specificati:
+\end_layout
+
+\begin_layout LyX-Code
+check_external_commands=1
+\end_layout
+
+\begin_layout Section
+Definizioni di macro
+\begin_inset LatexCommand index
+name "macro"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le macro offrono molta flessibilità nella definizione degli oggetti e dei
+ comandi.
+ Nagios offre la possibilità di definizioni di macro personalizzate, il
+ che permette l'ampio utilizzo di template di oggetti per la specifica di
+ parametri comuni a gruppi di oggetti simili.
+ Tutte le definizioni dei comandi possono utilizare macro, permettendo così
+ ai parametri di altri oggetti, quali host, servizi, e contatti, di essere
+ referenziati senza la necessità di dover passare qualunque cosa come argomento.
+\end_layout
+
+\begin_layout Standard
+Ogni invocazione di macro inizia e finisce con il simbolo 
+\begin_inset Quotes eld
+\end_inset
+
+$
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Di seguito riportiamo alcune delle definizioni di macro più utilizzate:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+HOSTNAME
+\series default
+: nome (breve) unico di un host; corrisponde alla direttiva 
+\series bold
+host_name
+\series default
+ nella definizione dell'oggetto host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+HOSTADDRESS
+\series default
+: indirizzo IP o nome host di un host; corrisponde alla direttiva 
+\series bold
+address
+\series default
+ nella definizione dell'oggetto host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+HOSTDSPLAYNAME
+\series default
+: descrizione dell'host; corrisponde alla direttiva 
+\series bold
+alias
+\series default
+ definizione dell'oggetto host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+HOSTSTATE
+\series default
+: stato corrente dell'host (uno fra UP, DOWN, e UNREACHABLE)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+HOSTGROUPNAMES
+\series default
+: lista di nomi brevi (separati da virgola) di tutti i gruppi di host a
+ cui un particolare host appartiene 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+LASTHOSTCHECK
+\series default
+: data e ora dell'ultimo controllo di un host (come timestamp Unix: numero
+ di secondi dal 01-01-1970)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+LASTHOSTSTATE
+\series default
+: ultimo stato noto di un host (uno fra UP, DOWN, e UNREACHABLE)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+SERVICEDESC
+\series default
+: descrizione di un servizio; corrisponde alla direttiva 
+\series bold
+description 
+\series default
+nella definizione dell'oggetto servizio 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+SERVICESTATE
+\series default
+: stato corrente del servizio (una fra OK, WARNING, UNKNOWN, e CRITICAL)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+SERVICEGROUPNAMES
+\series default
+: lista di nomi brevi (separati da virgola) di tutti i gruppi di servizi
+ a cui un servizio appartiene
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CONTACTNAME
+\series default
+: nome (breve) unico di un contatto; corrisponde alla direttiva 
+\series bold
+contact_name
+\series default
+ nella definizione dell'oggetto contatto
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CONTACTALIAS
+\series default
+: descrizione del contatto; corrisponde alla direttiva 
+\series bold
+alias 
+\series default
+nella definizione dell'oggetto contatto
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CONTACTEMAIL
+\series default
+: indirizzo e-mail del contatto; corrisponde alla direttiva 
+\series bold
+email 
+\series default
+nella definizione dell'oggetto contatto
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+CONTACTGROUPNAMES
+\series default
+: lista di nomi brevi (separati da virgola) di tutti i gruppi di contatti
+ a cui un contatto appartiene 
+\end_layout
+
+\begin_layout Standard
+Inoltre, convenzionalmente, tutte le definizioni standard dei comandi incluse
+ in Nagios utilizzano la macro USER1 come puntamento alla directory dei
+ plugins, ed è raccomandato di non modificare tale convenzione.
+\end_layout
+
+\begin_layout Standard
+Una funzionalità aggiuntiva è quella delle definizioni di 
+\series bold
+macro
+\series default
+ 
+\series bold
+on-demand
+\begin_inset LatexCommand index
+name "\bfseries{}macro on-demand"
+
+\end_inset
+
+
+\series default
+ che non sono definite, ma quando vengono incontrate in una definizione
+ di un comando vengono interpretate e sostituite opportunamente.
+ Queste macro accettano uno o più argomenti all'interno del nome della definizio
+ne di macro (ognuno passato dopo i due punti, 
+\begin_inset Quotes eld
+\end_inset
+
+:
+\begin_inset Quotes erd
+\end_inset
+
+).
+ Questo meccanismo è utilizzato per leggere valori specifici non relativi
+ all'oggetto corrente.
+ Ad esempio per leggere l'email del contatto per l'utente jdoe, a prescindere
+ da chi è l'attuale persona del contatto, la macro sarebbe: $CONTACTEMAIL:jdoe$,
+ che indica la definizione di macro CONTACTEMAIL nel contesto del contatto
+ di jdoe.
+\end_layout
+
+\begin_layout Standard
+Nagios offre la possibilità di definire 
+\series bold
+macro personalizzate
+\series default
+, che permettono di definire attributi aggiuntivi per ogni tipo di oggetto
+ (ad es.
+ un indirizzo MAC nella definizione di un host), e che possono essere usate
+ all'interno dei comandi.
+ Una macro personalizzata viene definita all'interno di una definizione
+ di oggetto con una direttiva a lettere maiuscole preceduta da un underscore
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+_
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+, e viene referenziata in uno dei modi seguenti a seconda del tipo di oggetto
+ in cui è definita:
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+$_HOST<variable>$
+\series default
+ : per direttive definite all'interno di oggetti di tipo host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+$_SERVICE<variable>$
+\series default
+ : per direttive definite all'interno di oggetti di tipo servizio
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+$_CONTACT<variable>$
+\series default
+ : per direttive definite all'interno di oggetti di tipo contatto
+\end_layout
+
+\begin_layout Standard
+La maggior parte delle definizioni delle macro standard vengono esportate,
+ per essere utilizzate dai comandi di controllo, come variabili d'ambiente,
+ il cui nome è quello della macro corrispondente con la stringa 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+NAGIOS_
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+ come prefisso.
+ 
+\end_layout
+
+\begin_layout Standard
+Le variabili 
+\series bold
+on-demand
+\series default
+ e, per ragioni di sicurezza, le macro 
+\series bold
+$USERn$
+\series default
+ non sono esportate come variabili d'ambiente ai comandi.
+\end_layout
+
+\begin_layout Section
+Configurare gli Host
+\begin_inset LatexCommand index
+name "Host"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Gli 
+\series bold
+host
+\series default
+ sono oggetti che descrivono macchine da monitorare siano esse macchine
+ fisiche che virtuali.
+ 
+\end_layout
+
+\begin_layout Standard
+Un host consiste di un nome breve, un nome descrittivo, e un indirizzo IP.
+\end_layout
+
+\begin_layout Standard
+L'oggetto host descrive anche quando e come il sistema debba essere monitorato,
+ così come chi debba essere contattato rispetto ai problemi relativi a questo
+ host.
+ Esso specifica anche quanto spesso l'host dovrebbe essere controllato,
+ come debbano essere ritentati i controlli, e quanto spesso una notifica
+ dovrebbe essere inviata.
+\end_layout
+
+\begin_layout Standard
+Di seguito una tabella delle direttive più comuni che possono essere usate
+ per descrivere un host.
+\end_layout
+
+\begin_layout Standard
+(Le voci in 
+\emph on
+corsivo
+\emph default
+ sono obbligatorie nella specifica di un host).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+host_name
+\series default
+\emph default
+ : nome breve, unico dell'host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+alias
+\series default
+\emph default
+: nome descrittivo dell'host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+address
+\series default
+\emph default
+: indirizzo IP o FQDN dell'host (è raccomandato l'utilizzo dell'indirizzo
+ IP, poichè i controlli potrebbero fallire se il servizio DNS non funziona)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+parents
+\series default
+: lista (separata da virgole) di tutti gli host 
+\emph on
+parent
+\emph default
+ dai quali questo host dipende (di solito questa lista contiene uno o più
+ switch e router ai quali questo host è 
+\emph on
+direttamente
+\emph default
+ connesso)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+hostgroups
+\series default
+: lista (separata da virgole) di tutti i gruppi di host di cui questo host
+ dovrebbe essere membro
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+check_command
+\series default
+: nome breve del comando da utilizzare per il test di raggiungilità dell'host:
+ se il comando restituisce OK, si assume che l'host sia funzionante (UP),
+ altrimenti che sia non funzionante (DOWN)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+check_interval
+\series default
+: specifica quanto spesso il controllo dovrebbe essere effettuato (in minuti)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+retry_interval
+\series default
+: specifica quanti minuti occorre attendere (quando l'host è in uno stato
+ non UP) prima di ricontrollare se l'host è tornato funzionante (UP)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+max_check_attempts
+\series default
+\emph default
+: specifica quante volte un controllo debba riportare che l'host è non funzionan
+te prima di assumere che esso sia effettivamente nello stato non funzionante
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+check_period
+\series default
+\emph default
+: specifica il nome del periodo di tempo durante il quale l'host debba essere
+ controllato se funzionante o meno 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+contacts
+\series default
+\emph default
+: lista (separata da virgole) di tutti i contatti che dovrebbero ricevere
+ le notifiche relative ai cambiamenti di stato dell'host (deve essere specificat
+o almeno un contatto o gruppo di contatto per ogni host)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+contact_groups
+\series default
+\emph default
+: lista (separata da virgole) di tutti i gruppi di contatto che dovrebbero
+ ricevere le notifiche relative ai cambiamenti di stato dell'host (deve
+ essere specificato almeno un contatto o gruppo di contatto per ogni host)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+first_notification_delay
+\series default
+: specifica quanti minuti occorre attendere affinchè la prima notifica,
+ relativa ad un host non funzionante, debba essere inviata
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+notification_interval
+\series default
+\emph default
+: specifica quanti minuti occorre attendere affinchè ogni successiva notifica,
+ relativa ad un host non funzionante, debba essere inviata
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+notification_period
+\series default
+\emph default
+: specifica il nome del periodo di tempo durante le notifiche relative allo
+ stato dell'host debbano essere inviate 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+notification_options
+\series default
+ specifica la lista (separata da virgole) di quali tipi di notifica relativi
+ allo stato dell'host debbano essere inviati; da specificare uno o più dei
+ seguenti tipi
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+d
+\series default
+— stato di 
+\emph on
+host DOWN 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+u
+\series default
+—stato di 
+\emph on
+host UNREACHABLE
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+r
+\series default
+—stato di 
+\emph on
+host recovery (UP state)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+f
+\series default
+—inizio/termine dell'host 
+\emph on
+flapping
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+s
+\series default
+—notifiche circa l'inizio/fine dei fermi macchina programmati
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Per default, Nagios assume che tutti gli host siano nello stato funzionante
+ (UP).
+ Se l'opzione 
+\series bold
+check_command
+\series default
+ non viene specificata, allora l'host viene considerato essere sempre nello
+ stat UP.
+ Viceversa, se il comando per il controllo dell'host viene specificato,
+ allora i controlli schedulati regolarmente avranno luogo cosicchè gli stati
+ dell'host verranno monitorati ad intervalli di 
+\series bold
+check_interval
+\series default
+ minuti.
+\end_layout
+
+\begin_layout Standard
+Nagios utilizza i concetti di stati 
+\series bold
+\emph on
+soft
+\series default
+\emph default
+ e 
+\series bold
+\emph on
+hard
+\series default
+\emph default
+ per gestire gli stati di un host.
+ Perciò, se lo stato di un host, è cambiato da UP a DOWN dall'utlimo stato
+ hard, allora Nagios assume che l'host sia in uno 
+\emph on
+stato DOWN soft
+\emph default
+ ed effettua nuovi tentativi del test, ad intervalli, questa volta, di 
+\series bold
+retry_interval
+\series default
+ minuti tra ogni test.
+ Qualora il risultato rimane lo stesso dopo 
+\series bold
+max_check_attempts
+\series default
+ tentativi, Nagios assume che l'host sia in uno 
+\emph on
+stato DOWN hard
+\emph default
+.
+ Lo stesso meccanismo si applica alle transizioni opposte da DOWN ad UP.
+\end_layout
+
+\begin_layout Standard
+La direttiva 
+\series bold
+parents
+\series default
+ dell'oggetto host viene utilizzata per definire la topologia della rete.
+ Di solito, questa direttiva si riferisce ad uno switch, router o un qualunque
+ altro dispositivo responsabile dell'istradamento dei pacchetti di rete
+ da e verso l'host.
+ L'host viene assunto irraggiungibile se l'host (router, switch) 
+\series bold
+parent
+\series default
+(
+\series bold
+s
+\series default
+) è al momento in uno stato DOWN hard.
+\end_layout
+
+\begin_layout Standard
+Se la rete locale consiste di server connessi attraverso uno switch e un
+ router ad una rete differente, allora il 
+\series bold
+parent
+\series default
+(
+\series bold
+s
+\series default
+) di tutte le macchine della rete locale, così come dei router, sarà lo
+ switch.
+ Il
+\series bold
+ parent
+\series default
+(
+\series bold
+s
+\series default
+) del router dall'altro versante del collegamento sarà il router local.
+ 
+\end_layout
+
+\begin_layout Standard
+Il seguente diagramma di esempio mostra una infrastruttura di rete e indica
+ come un server Nagios dovrebbe essere configurato in termini di 
+\series bold
+parents
+\series default
+ per ogni elemento della rete:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+    filename fig3.png
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A sinistra è mostrata la topologia di rete, mentre a destra ne è riportata
+ la struttura di relazione di 
+\series bold
+parent
+\series default
+ela.
+ Ogni freccia punta al 
+\series bold
+parent
+\series default
+ diretto.
+ Per gli elementi di rete (host, switch, router etc...) nella stessa sottorete
+ del server Nagios non è necessario indicare i relativi 
+\series bold
+parent
+\series default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Indicare nella propria topologia di rete gli elementi quali switch, router
+ etc...
+ è sempre una buona idea anche qualora essi non possano essere testati/controlla
+ti; infatti ciò risulta utile nei fermi macchina programmati, in quanto
+ Nagios non effettuerà test su macchine collegate tramite switch/router
+ programmati per un fermo, evitando così, l'invio di inutili notifiche di
+ host non funzionante.
+\end_layout
+
+\begin_layout Standard
+Nagios offre una gestione accurata dei periodi di controllo/test e di notifica,
+ tramite la quale si possono specificare periodi di tempo durante i quali
+ i vari host devono essere o meno monitorati oppure in cui debbano essere
+ inviate o meno notifiche del loro stato (indipendentemente dal fatto se
+ sono monitorati o meno).
+\end_layout
+
+\begin_layout Standard
+Inoltre utilizzando la possibilità di definire 
+\emph on
+gruppi
+\emph default
+ offerta da Nagios, si possono raggruppare host con caratteristiche similari
+ relative ai controllo/test, alle notifiche, all'ubicazione, alla funzionalità
+ etc..., permettendo una gestione più semplice e veloce.
+ Di seguito un esempio di definizioni di gruppi di host:
+\end_layout
+
+\begin_layout LyX-Code
+define hostgroup
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+hostgroup_name linux-servers
+\end_layout
+
+\begin_layout LyX-Code
+alias Linux servers
+\end_layout
+
+\begin_layout LyX-Code
+members linuxbox1,linuxbox2
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+define hostgroup
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+hostgroup_name aix-servers
+\end_layout
+
+\begin_layout LyX-Code
+alias AIX servers
+\end_layout
+
+\begin_layout LyX-Code
+members aixbox1,aixbox2
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout LyX-Code
+define hostgroup
+\end_layout
+
+\begin_layout LyX-Code
+{
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+hostgroup_name unix-servers
+\end_layout
+
+\begin_layout LyX-Code
+alias UNIX servers servers
+\end_layout
+
+\begin_layout LyX-Code
+hostgroup_members linux-servers,aix-servers
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+}
+\end_layout
+
+\begin_layout Standard
+Di seguito una tabella delle direttive più comuni che possono essere usate
+ per descrivere un gruppo host.
+\end_layout
+
+\begin_layout Standard
+(Le voci in 
+\emph on
+corsivo
+\emph default
+ sono obbligatorie nella specifica di un gruppo host).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+hostgroup_name
+\series default
+\emph default
+ : nome breve, unico del gruppo di host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+alias
+\series default
+\emph default
+: nome descrittivo del gruppo di host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+members
+\series default
+ : lista (separata da virgole) di tutti gli host membri del gruppo 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+hostgroup_members
+\series default
+ : lista (separata da virgole) di tutti gli altri gruppi di host i cui membri
+ sono anche membri di questo gruppo 
+\end_layout
+
+\begin_layout Standard
+I gruppi di host possono anche essere utilizzati quando si definiscono i
+ servizi o le dipendenze.
+\end_layout
+
+\begin_layout Standard
+È anche possibile definire 
+\emph on
+dipendenze
+\emph default
+ tra gli host; queste sono simili alle relazioni parent-host, ma offrono
+ la possibilità di opzioni di configurazione più complesse: Nagios effettuerà
+ controlli/test su un host o servizio solo se tutti gli host/servizi da
+ cui essi dipendono sono funzionanti.
+\end_layout
+
+\begin_layout Section
+Configurare i Servizi
+\begin_inset LatexCommand index
+name "Servizi"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I servizi sono oggetti che descrivono la/le funzionalità che un particolare
+ host offre.
+ Questo può essere virtualmente qualunque cosa: servizi di rete, o risorse
+ quali spazio di storage o carico di CPU.
+\end_layout
+
+\begin_layout Standard
+Un servizio è sempre associato ad un host su cui è in esecuzione.
+ È anche identificato dalla sua descrizione, che deve essere unica all'interno
+ di un particolare host.
+ 
+\end_layout
+
+\begin_layout Standard
+Un servizio definisce anche quando e come Nagios dovrebbe testarlo circa
+ il suo corretto funzionamento, e come notificare il personale responsabile
+ del servizio in caso di malfunzionamento.
+\end_layout
+
+\begin_layout Standard
+Di seguito una tabella delle direttive più comuni che possono essere usate
+ per descrivere un servizio.
+\end_layout
+
+\begin_layout Standard
+(Le voci in 
+\emph on
+corsivo
+\emph default
+ sono obbligatorie nella specifica di un host).
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+host_name
+\series default
+: lista (separata da virgole) dei nomi brevi degli host su cui il servizio
+ è in esecuzione
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+hostgroup_name
+\series default
+: lista (separata da virgole) dei nomi brevi dei gruppi di host su cui il
+ servizio è in esecuzione
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+service_description
+\series default
+ : descrizione del servizio, usata per identificare univocamente un servizio
+ in esecuzione su un host
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+servicegroups
+\series default
+ : lista (separata da virgole) di tutti i gruppi di servizi di cui questo
+ servizio è membro
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+check_command
+\series default
+: nome breve del comando utilizzato per controllare se il servizio è in
+ esecuzione o meno
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+check_interval
+\series default
+ specifica (in minuti) quanto spesso un test debba essere effettuato
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+retry_interval
+\series default
+: specifica (in minuti) quanto aspettare prima di effettuare how many minutes
+ to wait before re-testing whether the service is working specifica quanti
+ minuti occorre attendere (quando il servizio è in uno stato di non esecuzione)
+ prima di ricontrollare se il servizio è di nuovo in esecuzione 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+max_check_attempts
+\series default
+\emph default
+: specifica quante volte un controllo debba riportare che il servizio non
+ è in esecuzione prima di assumere che esso sia effettivamente nello stato
+ di non esecuzione
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+check_period
+\series default
+\emph default
+: specifica il nome del periodo di tempo durante il quale il servizio debba
+ essere controllato se in esecuzione o meno 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+contacts
+\series default
+\emph default
+: lista (separata da virgole) di tutti i contatti che dovrebbero ricevere
+ le notifiche relative ai cambiamenti di stato del servizio (deve essere
+ specificato almeno un contatto o gruppo di contatto per ogni servizio)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+contact_groups
+\series default
+\emph default
+: lista (separata da virgole) di tutti i gruppi di contatto che dovrebbero
+ ricevere le notifiche relative ai cambiamenti di stato del servizio (deve
+ essere specificato almeno un contatto o gruppo di contatto per ogni servizio)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+first_notification_delay
+\series default
+: specifica quanti minuti occorre attendere affinchè la prima notifica,
+ relativa ad un servizio non in esecuzione, debba essere inviata
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+notification_interval
+\series default
+\emph default
+: specifica quanti minuti occorre attendere affinchè ogni successiva notifica,
+ relativa ad un servizio non in esecuzione, debba essere inviata
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\emph on
+notification_period
+\series default
+\emph default
+: specifica il nome del periodo di tempo durante le notifiche relative allo
+ stato del servizio debbano essere inviate 
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+notification_options
+\series default
+ specifica la lista (separata da virgole) di quali tipi di notifica relativi
+ allo stato dell'host debbano essere inviati; da specificare uno o più dei
+ seguenti tipi
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\series bold
+w
+\series default
+— 
+\emph on
+servizio 
+\emph default
+in
+\emph on
+ 
+\emph default
+stato
+\emph on
+ WARNING
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+u
+\series default
+—
+\emph on
+servizio 
+\emph default
+in
+\emph on
+ 
+\emph default
+stato
+\emph on
+ UNREACHABLE
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+c
+\series default
+—
+\emph on
+servizio 
+\emph default
+in
+\emph on
+ 
+\emph default
+stato
+\emph on
+ CRITICAL
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+r
+\series default
+—
+\emph on
+servizio 
+\emph default
+in
+\emph on
+ 
+\emph default
+stato
+\emph on
+ 
+\emph default
+di
+\emph on
+ recovery 
+\emph default
+(ritorno allo stato 
+\emph on
+OK
+\emph default
+)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+f
+\series default
+—
+\series bold
+f
+\series default
+—inizio/termine dell'host 
+\emph on
+flapping
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+s
+\series default
+—notifiche circa l'inizio/fine dei fermi macchina programmati
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Molto spesso, lo stesso servizio viene offerto da più di un host.
+ In tali casi, è possibile specificare che un servizio verrà fornito da
+ più macchine, o anche specificare i gruppi di host per i quali tutti gli
+ host verranno controllati.
+ È anche possibile specificare gli host per i quali i controlli non debbano
+ essere effettuati (per fare questo occorre aggiungere un punto esclamativo
+ prima del nome dell'host o del gruppo di host).
+\end_layout
+
+\begin_layout Standard
+I servizi possono essere raggruppati in un modo del tutto simile a quello
+ degli oggetti host.
+ Questo può essere fatto per gestire i servizi più convenientemente.
+ I gruppi di servizi sono anche usati per configurare le dipendenze in un
+ modo più conveniente.
+\end_layout
+
+\begin_layout Standard
+The following table describes the attributes that can be used to define
+ a group.
+ Items
+\end_layout
+
+\begin_layout Standard
+in bold are required when specifying a service group.
+\end_layout
+
+\begin_layout Standard
+Short, unique name of the service group
+\end_layout
+
+\begin_layout Standard
+servicegroup_name
+\end_layout
+
+\begin_layout Standard
+Descriptive name of the service group
+\end_layout
+
+\begin_layout Standard
+alias
+\end_layout
+
+\begin_layout Standard
+members List of all hosts and services that should be a
+\end_layout
+
+\begin_layout Standard
+member of this group, separated by commas; see
+\end_layout
+
+\begin_layout Standard
+description below
+\end_layout
+
+\begin_layout Standard
+servicegroup_members List of all other service groups whose members should
+\end_layout
+
+\begin_layout Standard
+also be members of this group, separated by commas
+\end_layout
+
+\begin_layout Standard
+The format of the members directive of a service group object is one or
+ more
+\end_layout
+
+\begin_layout Standard
+<host>,<service> pairs.
+\end_layout
+
+\begin_layout Standard
+It is also possible to specify groups that a service should be member of
+ inside the
+\end_layout
+
+\begin_layout Standard
+service definition itself.
+ This can be achieved by specifying all groups that this service
+\end_layout
+
+\begin_layout Standard
+should be a member of.
+ To do this, add a list of all groups in the servicegroups
+\end_layout
+
+\begin_layout Standard
+directive in the service definition.
+\end_layout
+
+\begin_layout Standard
+Services may be configured to be dependant on one another, similar to how
+ hosts
+\end_layout
+
+\begin_layout Standard
+can.
+ In this case, Nagios will only perform checks on a service if all dependant
+\end_layout
+
+\begin_layout Standard
+services are working correctly
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\end_body
+\end_document

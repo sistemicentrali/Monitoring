@@ -1,0 +1,103 @@
+##########################################################
+############## ELENCO MODULI GENERALI ####################
+##########################################################
+
+FileLogger.dll
+	A module that logs all messages to file if no logging module is loaded no error messages will be
+	logged thus it is hard to find problems.
+
+CheckExternalScripts.dll
+	This module allows you to check external scripts and/or programs. 
+
+LUAScript.dll
+	This module allows you to write and change checks in the Lua scripting language. For a quite "guide"
+	on how to write scripts for NSClient++ see the LUAScript/guide page. For information on the Lua
+	scripting language and built-in modules and commands refer to the official Lua pages at: 
+	http://www.lua.org/ and http://lua-users.org/wiki/SampleCode
+
+NRPEListener.dll
+	This module accepts incoming NRPE connections and responds by executing various checks and returns
+	their result. To use this you need to have check_nrpe or another NRPE client. This is similar to
+	check_nt (NSClient) but much more flexible and supports encryption. This only drawback is that it
+	lacks any authorization.
+	As this module has the ability to generate command handlers by configuration there are command
+	handlers but nothing built in. This is present for compatiblity only it is suggested to use the
+	[CheckExternalScripts] instead.
+
+NSClientListener.dll
+	The NSClientListener module is written to allow backwards compatibility with the old NSClient and
+	check_nt. It has a listener (server) that accepts checks from the check_nt command and responds
+	accordingly. Due to the nature of the protocol and the limitation in the client NRPE is recommended
+	but if you like this works just fine for "simple things".
+	The following check_nt checks are supported.
+		* CLIENTVERSION
+		* CPULOAD
+		* UPTIME
+		* USEDDISKSPACE
+		* MEMUSE
+		* SERVICESTATE
+		* PROCSTATE
+		* COUNTER  
+
+NSCAAgent.dll
+	This module periodically runs a set of check_commands and submits the results to an NSCA server.
+
+RemoteConfiguration
+	DEPRECATED Don't use the module unless you have a reason :)
+
+SysTray.dll
+	A simple module to show an icon in the tray when the service is running this module does not export
+	any check commands.
+	NOTICE This is not used on windows vista and above! 
+
+
+##########################################################
+############## ELENCO MODULI PER PLUGINS #################
+##########################################################
+
+CheckDisk.dll
+	The CheckDisk module has various disk and file related checks. You can either check disk drive and
+	volume sizes as well as files and directories.
+    	* CheckFileSize, Check the size of one or more files or directories.
+    	* CheckDriveSize, Check the size of one or more Drives
+    	* CheckFile, DEPRECATED Check various aspects on one or more files or directories.
+    	* CheckFile2, Check various aspects on (one or) more files or directories. 
+
+CheckEventLog.dll
+	The CheckEventLog module checks for problems reported to the windows event log.
+	* CheckEventLog, Check to find errors in the event log.
+
+CheckExternalScripts.dll
+	This module allows you to check external scripts and/or programs. 
+
+CheckHelpers.dll
+	The CheckHelpers module has various helper function to alter other checks in various ways. This module
+	does not check anything by it self.
+	* CheckAlwaysOK, Alter the return code of another check to always return OK.
+    	* CheckAlwaysCRITICAL, Alter the return code of another check to always return CRITICAL.
+    	* CheckAlwaysWARNING, Alter the return code of another check to always return WARNING.
+    	* CheckMultiple, Runs multiple checks and returns the worst state. Useful for minimizing network
+	traffic and command definitions.
+
+CheckSystem.dll
+	A module to check various system related things. A list of the modules and there potential use is
+	listed below here.
+	* CheckCPU, Check CPU load
+	* CheckUpTime, Check system uptime
+	* CheckServiceState, Check state of a service
+	* CheckProcState, Check state of a process
+	* CheckMem, Check memory usage (page) 
+
+CheckTaskSched.dll
+	The CheckTaskSched module check check various aspects of the task scheduler. Feel free to request
+	checks that you need.
+	* CheckTaskSched, Check if tasks are working.
+
+CheckWMI.dll
+	The CheckWMI module has various WMI related functions used to query and check the WMI (Windows
+	Managment Instrumenation). Feel free to request checks that you need.
+	* CheckWMI, Check large resultsets from (for instance are there more than 5-rows matching criteria X,
+	ie. more than 5 Internet Explorer processes witch uses more then 123Mb memory).
+	* CheckWMIValue, Check the result of a query (ie. are the current memory utilization over X)
+
+
